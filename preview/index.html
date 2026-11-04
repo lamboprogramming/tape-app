@@ -99,6 +99,13 @@
   .daybar .labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
   .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
 
+  .flagrow { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-left: 6px; vertical-align: middle; }
+  .seg3 { grid-template-columns: 1fr 1fr 1fr; }
+  .scen-row { display: grid; grid-template-columns: .9fr 1fr 1fr 1.2fr; gap: 6px; padding: 9px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .scen-row:last-child { border-bottom: 0; }
+  .scen-row.head { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  .scen-row > div:not(:first-child) { text-align: right; }
+  .warn { background: rgba(255,92,108,.08); border: 1px solid #6b2630; color: #ffb3bb; border-radius: 10px; padding: 9px 11px; font-size: 13px; margin-top: 10px; line-height: 1.4; }
   /* sheet */
   .sheet-wrap { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; z-index: 20; }
   .sheet-wrap.open { display: block; }
@@ -201,6 +208,11 @@
       <button data-kind="call" class="on">Calls</button>
       <button data-kind="put">Puts</button>
     </div>
+    <div class="seg seg3" id="sym-sort" style="margin-top:-2px">
+      <button data-sort="strike" class="on">Strike</button>
+      <button data-sort="range_pct">% of range</button>
+      <button data-sort="range_dollars">$ range</button>
+    </div>
     <div class="strike-head"><div>Strike</div><div>Price</div><div>Change</div><div>Volume</div></div>
     <div class="card" id="sym-chain"></div>
     <div class="empty" id="sym-empty">Choose an expiration to load contracts.</div>
@@ -253,6 +265,53 @@
       <button class="btn primary block mt" id="sp-go">Build spread</button>
       <svg class="curve mt" id="sp-curve" viewBox="0 0 600 160" preserveAspectRatio="none" style="display:none"></svg>
       <div class="metric-grid" id="sp-out"></div>
+    </div>
+
+    <div class="section-title"><span>Scenarios by portfolio size</span></div>
+    <div class="card" style="padding:14px">
+      <div class="field-row">
+        <div><span class="label">Premium per share ($)</span><input id="scn-premium" type="number" step="0.01" value="1.00" /></div>
+        <div><span class="label">Risk per trade (%)</span><input id="scn-risk" type="number" step="0.1" value="10" /></div>
+      </div>
+      <button class="btn primary block mt" id="scn-go">Show scenarios</button>
+      <div class="card mt" id="scn-out" style="margin:0;display:none"></div>
+    </div>
+
+    <div class="section-title"><span>Iron condor</span></div>
+    <div class="card" style="padding:14px">
+      <div class="field-row">
+        <div><span class="label">Put long strike</span><input id="ic-pl" type="number" value="90" /></div>
+        <div><span class="label">Put short strike</span><input id="ic-ps" type="number" value="95" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Call short strike</span><input id="ic-cs" type="number" value="105" /></div>
+        <div><span class="label">Call long strike</span><input id="ic-cl" type="number" value="110" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Put long premium</span><input id="ic-plp" type="number" step="0.01" value="0.20" /></div>
+        <div><span class="label">Put short premium</span><input id="ic-psp" type="number" step="0.01" value="0.60" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Call short premium</span><input id="ic-csp" type="number" step="0.01" value="0.60" /></div>
+        <div><span class="label">Call long premium</span><input id="ic-clp" type="number" step="0.01" value="0.20" /></div>
+      </div>
+      <button class="btn primary block mt" id="ic-go">Build iron condor</button>
+      <div class="metric-grid" id="ic-out"></div>
+    </div>
+
+    <div class="section-title"><span>Single-leg risk</span></div>
+    <div class="card" style="padding:14px">
+      <div class="field-row">
+        <div><span class="label">Type</span><select id="nk-kind"><option value="call">Call</option><option value="put">Put</option></select></div>
+        <div><span class="label">Side</span><select id="nk-side"><option value="long">Buy</option><option value="short">Sell</option></select></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Strike</span><input id="nk-strike" type="number" value="100" /></div>
+        <div><span class="label">Premium per share</span><input id="nk-prem" type="number" step="0.01" value="2.00" /></div>
+      </div>
+      <button class="btn primary block mt" id="nk-go">Check risk</button>
+      <div class="metric-grid" id="nk-out"></div>
+      <div id="nk-warn"></div>
     </div>
 
     <div class="section-title"><span>Screener</span><span class="pill" id="scr-count">0 rules</span></div>
@@ -326,6 +385,18 @@
         <select id="al-op"><option value=">=">rises to or above</option><option value="<=">falls to or below</option></select>
         <input id="al-value" type="number" step="0.01" />
       </div>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--text);font-size:14px"><input type="checkbox" id="al-combo" style="width:auto" /> Also require another condition</label>
+      <div id="al-combo-box" style="display:none">
+        <span class="label">When</span>
+        <div class="field-row">
+          <input id="al-c2-symbol" placeholder="Symbol" autocapitalize="characters" />
+          <select id="al-c2-field"><option value="change_pct">% change</option><option value="range_pct">% of day range</option><option value="last">Price</option></select>
+        </div>
+        <div class="field-row">
+          <select id="al-c2-op"><option value="<=">is at or below</option><option value=">=">is at or above</option></select>
+          <input id="al-c2-value" type="number" step="0.01" value="-1" />
+        </div>
+      </div>
       <div class="field-row mt">
         <button class="btn block" id="al-cancel">Cancel</button>
         <button class="btn primary block" id="al-save">Save alert</button>
@@ -354,6 +425,9 @@
   const signed = (n, d = 2) => (n == null ? "—" : (n > 0 ? "+" : "") + num(n, d));
   const pct = (n) => (n == null ? "—" : (n > 0 ? "+" : "") + num(n, 2) + "%");
   const vol = (n) => (n == null ? "—" : Number(n).toLocaleString());
+  const FLAG_LABELS = { near_high: "near high", near_low: "near low", pullback_from_high: "pullback" };
+  const flagPills = (q) => (q && q.flags && q.flags.length
+    ? `<span class="flagrow">${q.flags.map((f) => `<span class="pill">${FLAG_LABELS[f] || f}</span>`).join("")}</span>` : "");
   const cls = (n) => (n > 0 ? "up" : n < 0 ? "down" : "flat");
   let toastTimer;
   const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2400); };
@@ -460,7 +534,7 @@
       const q = quotes.get(s);
       const up = q ? q.change_pct : null;
       return `<div class="row" data-sym="${esc(s)}" data-open="${esc(s)}">
-        <div class="main"><div class="sym">${esc(s)}</div><div class="meta">Prev ${q ? usd(q.prev_close) : "—"} · H ${q ? usd(q.high) : "—"} · L ${q ? usd(q.low) : "—"}</div></div>
+        <div class="main"><div class="sym">${esc(s)}</div><div class="meta">Prev ${q ? usd(q.prev_close) : "—"} · H ${q ? usd(q.high) : "—"} · L ${q ? usd(q.low) : "—"} ${flagPills(q)}</div></div>
         <div class="price"><strong>${q ? usd(q.last) : "—"}</strong><span class="chg ${cls(up)}">${q ? pct(up) : "—"}</span></div>
         <div class="reorder">
           <button data-up="${i}" aria-label="Move up">▲</button>
@@ -507,6 +581,7 @@
   let chain = [];
   let chainQuotes = new Map();
   let chainTimer = null;
+  let chainSort = "strike";
 
   async function openSymbol(sym) {
     currentSymbol = sym; expiration = null; chain = []; chainQuotes = new Map();
@@ -562,7 +637,11 @@
   }
   function renderChain() {
     const atm = chainSpot == null ? null : chain.reduce((best, r) => (best == null || Math.abs(r.strike - chainSpot) < Math.abs(best.strike - chainSpot) ? r : best), null);
-    const rows = chain.filter((r) => r[kind]);
+    let rows = chain.filter((r) => r[kind]);
+    if (chainSort !== "strike") {
+      const key = (r) => chainQuotes.get(r[kind].symbol)?.[chainSort] ?? -1;
+      rows = [...rows].sort((a, b) => key(b) - key(a));
+    }
     $("sym-empty").style.display = rows.length ? "none" : "block";
     $("sym-empty").textContent = rows.length ? "" : `No ${kind === "call" ? "calls" : "puts"} for this expiration.`;
     $("sym-chain").innerHTML = rows.map((r) => {
@@ -573,7 +652,7 @@
       const isAtm = atm && r.strike === atm.strike;
       const dist = r.distance_pct == null ? "" : `${r.distance_pct > 0 ? "+" : ""}${num(r.distance_pct, 1)}% away`;
       return `<div class="strike-row ${isAtm ? "atm" : ""}" data-occ="${esc(c.symbol)}" data-strike="${r.strike}">
-        <div class="k">${num(r.strike, 2)}${isAtm ? ' <small>at the money</small>' : `<small>${dist}</small>`}</div>
+        <div class="k">${num(r.strike, 2)}${isAtm ? ' <small>at the money</small>' : `<small>${dist}${q && q.range_pct != null ? " · " + num(q.range_pct, 0) + "% of day range" : ""}</small>`}</div>
         <div class="r">${usd(price)}</div>
         <div class="r chg ${cls(ch)}">${pct(ch)}</div>
         <div class="r">${vol(c.volume ?? q?.volume)}</div>
@@ -616,7 +695,7 @@
     const m = contractMeta || {};
     const title = `${currentSymbol} ${num(m.strike, 2)} ${m.kind === "put" ? "Put" : "Call"}`;
     $("ct-name").textContent = title;
-    $("ct-sub").textContent = `Expires ${expiration || "—"} · ${contractSym}`;
+    $("ct-sub").innerHTML = `Expires ${expiration || "—"} · ${esc(contractSym)} ${flagPills(q)}`;
     $("ct-last").textContent = usd(q.last);
     $("ct-delta").innerHTML = `<span class="${cls(q.change)}">${signed(q.change)} (${pct(q.change_pct)})</span> <span class="flat">vs previous close</span>`;
     const mid = m.bid != null && m.ask != null ? (m.bid + m.ask) / 2 : null;
@@ -633,6 +712,7 @@
       ["vs open", q.open ? pct((q.last - q.open) / q.open * 100) : "—"],
     ];
     $("ct-stats").innerHTML = stats.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("");
+    if (mid != null) $("scn-premium").value = mid.toFixed(2);
     // Where the contract trades inside its own day's range.
     const lo = q.low, hi = q.high;
     const bar = $("ct-daybar");
@@ -656,13 +736,26 @@
     const q = chainQuotes.get(contractSym);
     $("al-sheet-name").textContent = `${currentSymbol} ${num(contractMeta?.strike, 2)} ${contractMeta?.kind === "put" ? "Put" : "Call"} · ${contractSym}`;
     $("al-value").value = q ? q.last.toFixed(2) : "";
+    $("al-combo").checked = false; $("al-combo-box").style.display = "none";
+    $("al-c2-symbol").value = currentSymbol || "";
     $("alert-wrap").classList.add("open");
   });
   $("al-cancel").addEventListener("click", () => $("alert-wrap").classList.remove("open"));
+  $("al-combo").addEventListener("change", (e) => { $("al-combo-box").style.display = e.target.checked ? "block" : "none"; });
   $("al-save").addEventListener("click", () => {
     const value = Number($("al-value").value);
     if (!Number.isFinite(value)) return toast("Enter a price.");
-    account.alerts.push({ id: "a" + Date.now().toString(36), symbol: contractSym, field: "last", op: $("al-op").value, value, label: $("al-sheet-name").textContent });
+    const id = "a" + Date.now().toString(36);
+    const label = $("al-sheet-name").textContent;
+    const primary = { symbol: contractSym, field: "last", op: $("al-op").value, value };
+    let rule = { id, symbol: contractSym, label, ...primary };
+    if ($("al-combo").checked) {
+      const c2sym = $("al-c2-symbol").value.trim().toUpperCase();
+      const c2value = Number($("al-c2-value").value);
+      if (!c2sym || !Number.isFinite(c2value)) return toast("Enter the second condition.");
+      rule = { id, symbol: contractSym, label, conditions: [primary, { symbol: c2sym, field: $("al-c2-field").value, op: $("al-c2-op").value, value: c2value }] };
+    }
+    account.alerts.push(rule);
     save(); $("alert-wrap").classList.remove("open"); toast("Alert saved.");
   });
   $("ct-spread").addEventListener("click", () => {
@@ -678,7 +771,7 @@
     $("al-empty").style.display = list.length ? "none" : "block";
     $("al-list").innerHTML = list.map((r, i) =>
       `<div class="alert-row"><div><div class="sym" style="font-weight:600">${esc(r.label || r.symbol)}</div>
-        <div class="meta" style="font-size:12px;color:var(--muted);margin-top:2px">Notify when price ${r.op === ">=" ? "rises to or above" : "falls to or below"} ${usd(r.value)}</div></div>
+        <div class="meta" style="font-size:12px;color:var(--muted);margin-top:2px">${r.conditions ? "All " + r.conditions.length + " conditions must hold" : "Notify when price " + (r.op === ">=" ? "rises to or above" : "falls to or below") + " " + usd(r.value)}</div></div>
         <button class="ghost" data-del="${i}" aria-label="Delete alert">✕</button></div>`).join("");
     $("al-list").querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { account.alerts.splice(Number(b.dataset.del), 1); save(); renderAlerts(); }));
   }
@@ -784,6 +877,46 @@
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
     $("screen-login").style.display = "flex";
     $("login-email").value = ""; $("login-pass").value = "";
+  });
+
+  // ---------- chain sort ----------
+  $("sym-sort").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sort]"); if (!b) return;
+    chainSort = b.dataset.sort;
+    $("sym-sort").querySelectorAll("[data-sort]").forEach((x) => x.classList.toggle("on", x === b));
+    renderChain();
+  });
+
+  // ---------- scenarios, iron condor, single-leg risk ----------
+  const tile = ([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`;
+  $("scn-go").addEventListener("click", async () => {
+    try {
+      const out = await post("/api/size/scenarios", { premium: Number($("scn-premium").value), risk_pct: Number($("scn-risk").value) });
+      $("scn-out").style.display = "block";
+      $("scn-out").innerHTML = `<div class="scen-row head"><div>Portfolio</div><div>Budget</div><div>Contracts</div><div>Max loss</div></div>` +
+        out.scenarios.map((r) => `<div class="scen-row"><div>${usd(r.portfolio, 0)}</div><div>${usd(r.risk_budget)}</div><div>${r.contracts}</div><div>${usd(r.max_loss)}</div></div>`).join("");
+    } catch (e) { toast(e.message); }
+  });
+  $("ic-go").addEventListener("click", async () => {
+    try {
+      const pos = await post("/api/strategy/iron-condor", {
+        put_long: Number($("ic-pl").value), put_short: Number($("ic-ps").value),
+        call_short: Number($("ic-cs").value), call_long: Number($("ic-cl").value),
+        put_long_premium: Number($("ic-plp").value), put_short_premium: Number($("ic-psp").value),
+        call_short_premium: Number($("ic-csp").value), call_long_premium: Number($("ic-clp").value),
+      });
+      $("ic-out").innerHTML = [["Credit received", usd(pos.max_profit)], ["Max loss", usd(pos.max_loss)],
+        ["Lower breakeven", num(pos.breakevens[0])], ["Upper breakeven", num(pos.breakevens[1])]].map(tile).join("");
+    } catch (e) { toast(e.message); }
+  });
+  $("nk-go").addEventListener("click", async () => {
+    try {
+      const pos = await post("/api/strategy/naked", { kind: $("nk-kind").value, side: $("nk-side").value,
+        strike: Number($("nk-strike").value), premium: Number($("nk-prem").value) });
+      $("nk-out").innerHTML = [["Max profit", usd(pos.max_profit)], ["Max loss", pos.max_loss == null ? "Unlimited" : usd(pos.max_loss)],
+        ["Breakeven", num(pos.breakeven)], ["Net", pos.net_type]].map(tile).join("");
+      $("nk-warn").innerHTML = pos.warnings.map((w) => `<div class="warn">${esc(w)}</div>`).join("");
+    } catch (e) { toast(e.message); }
   });
 
   // ---------- boot ----------
