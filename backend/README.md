@@ -28,9 +28,20 @@ python3 -m unittest discover -s tests -t . -v
 | GET | `/api/options/{symbol}/expirations` | YYYY-MM-DD dates |
 | GET | `/api/options/{symbol}/chain?expiration=YYYY-MM-DD` | calls and puts |
 | POST | `/api/screener` | `{universe, filters, sort?, limit?}` |
+| POST | `/api/size` | shares or contracts for one trade |
+| POST | `/api/size/scenarios` | contracts at $500, $800, $1,000, $1,500, $2,000 portfolios |
+| POST | `/api/strategy/vertical` | debit and credit spreads, optional payoff curve |
+| POST | `/api/strategy/iron-condor` | four-leg credit spread with payoff |
+| POST | `/api/strategy/naked` | single-leg risk, with warnings on naked shorts |
+| POST | `/api/alerts/evaluate` | single or combined (all-of) conditions |
 | GET | `/api/tape?symbols=AAPL&interval=2` | server-sent events, `event: quotes` |
 
-Screener fields: `last`, `change`, `change_pct`, `volume`, `bid`, `ask`, `spread`.
+Screener fields: `last`, `change`, `change_pct`, `volume`, `bid`, `ask`, `spread`, `range_pct`, `range_dollars`.
+`range_pct` is the quote's position in its own day range (0 = day low, 100 = day high).
+Quotes also carry `flags`: `near_high`, `near_low`, `pullback_from_high`.
+
+Quotes are cached per symbol for `QUOTE_CACHE_SECONDS` (default 30), so every member shares one upstream call per window.
+Market-hours gating is not built yet.
 Operators: `>`, `>=`, `<`, `<=`, `==`, `!=`, `between` (inclusive pair).
 
 ## Access model

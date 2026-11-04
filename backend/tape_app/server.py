@@ -14,6 +14,9 @@ Routes:
     POST /api/size        body: {"mode": "shares"|"contracts", "account", "risk_pct", ...}
     POST /api/strategy/vertical   body: {"strategy", "long_strike", "short_strike", "long_premium", "short_premium", "curve"?}
     POST /api/alerts/evaluate     body: {"rules": [...], "already_fired": [...]}
+    POST /api/size/scenarios      body: {"premium", "risk_pct", "portfolios"?: [500, ...]}
+    POST /api/strategy/iron-condor  body: {put_long, put_short, call_short, call_long, *_premium}
+    POST /api/strategy/naked      body: {"kind": "call"|"put", "side": "long"|"short", "strike", "premium"}
     GET  /api/tape?symbols=AAPL,MSFT&interval=2   (text/event-stream, event: quotes)
 """
 
@@ -23,13 +26,15 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from .alerts import evaluate_alerts, validate_rule
+from .alerts import evaluate_alerts, required_symbols, validate_rule
 from .options import summarize_chain
+from .quote_metrics import enrich_all
 from .providers import create_provider
 from .providers.base import MarketDataProvider
 from .screener import run_screen, validate_screen
-from .sizing import size_option_contracts, size_shares
-from .strategies import build_vertical, payoff_curve
+from .sizing import size_option_contracts, size_scenarios, size_shares
+from .strategies import (build_iron_condor, build_naked, build_vertical, iron_condor_payoff,
+                         payoff_curve, payoff_at_expiry)
 
 MAX_SYMBOLS = 100
 
@@ -131,7 +136,7 @@ def make_handler(provider: MarketDataProvider):
                     symbols = parse_symbols(query.get("symbols", [""])[0])
                     if not symbols:
                         return self._error(400, "symbols query param required")
-                    return self._send_json(200, {"quotes": provider.get_quotes(symbols)})
+                    return self._send_json(200, {"quotes": enrich_all(provider.get_quotes(symbols))})
                 if url.path == "/api/tape":
                     return self._stream_tape(query)
                 match = re.fullmatch(r"/api/options/([^/]+)/(expirations|chain)", url.path)
@@ -178,6 +183,9 @@ def make_handler(provider: MarketDataProvider):
                 "/api/size": self._post_size,
                 "/api/strategy/vertical": self._post_vertical,
                 "/api/alerts/evaluate": self._post_alerts,
+                "/api/size/scenarios": self._post_scenarios,
+                "/api/strategy/iron-condor": self._post_iron_condor,
+                "/api/strategy/naked": self._post_naked,
             }
             handler = handlers.get(path)
             if handler is None:
@@ -200,7 +208,7 @@ def make_handler(provider: MarketDataProvider):
             errors = validate_screen(body)
             if errors:
                 raise _HttpError(400, "invalid screen", errors)
-            results = run_screen(provider.get_quotes(symbols), body)
+            results = run_screen(enrich_all(provider.get_quotes(symbols)), body)
             return self._send_json(200, {"count": len(results), "results": results})
 
         def _post_size(self, body):
@@ -214,6 +222,35 @@ def make_handler(provider: MarketDataProvider):
             else:
                 raise _HttpError(400, 'mode must be "shares" or "contracts"')
             return self._send_json(200, result)
+
+        def _post_scenarios(self, body):
+            portfolios = body.get("portfolios")
+            kwargs = {"portfolios": [float(p) for p in portfolios]} if portfolios else {}
+            rows = size_scenarios(float(body["premium"]), float(body["risk_pct"]),
+                                  multiplier=int(body.get("multiplier", 100)), **kwargs)
+            return self._send_json(200, {"scenarios": rows})
+
+        def _post_iron_condor(self, body):
+            position = build_iron_condor(
+                float(body["put_long"]), float(body["put_short"]), float(body["call_short"]), float(body["call_long"]),
+                float(body["put_long_premium"]), float(body["put_short_premium"]),
+                float(body["call_short_premium"]), float(body["call_long_premium"]),
+                int(body.get("multiplier", 100)),
+            )
+            curve_spec = body.get("curve")
+            if curve_spec:
+                low, high, steps = float(curve_spec["low"]), float(curve_spec["high"]), int(curve_spec.get("steps", 50))
+                if high <= low or steps < 2:
+                    raise _HttpError(400, "curve needs high > low and steps >= 2")
+                step = (high - low) / (steps - 1)
+                position["curve"] = [{"underlying": round(low + i * step, 4),
+                                      "pnl": iron_condor_payoff(position, low + i * step)} for i in range(steps)]
+            return self._send_json(200, position)
+
+        def _post_naked(self, body):
+            return self._send_json(200, build_naked(body.get("kind"), body.get("side"),
+                                                    float(body["strike"]), float(body["premium"]),
+                                                    int(body.get("multiplier", 100))))
 
         def _post_vertical(self, body):
             position = build_vertical(
@@ -236,8 +273,8 @@ def make_handler(provider: MarketDataProvider):
             errors = [f"rules[{i}]: {e}" for i, r in enumerate(rules) for e in validate_rule(r)]
             if errors:
                 raise _HttpError(400, "invalid rules", errors)
-            symbols = parse_symbols([r["symbol"] for r in rules])
-            fired = evaluate_alerts(rules, provider.get_quotes(symbols) if symbols else [],
+            symbols = required_symbols(rules)
+            fired = evaluate_alerts(rules, enrich_all(provider.get_quotes(symbols)) if symbols else [],
                                     set(body.get("already_fired", [])))
             return self._send_json(200, {"fired": fired})
 

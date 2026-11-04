@@ -138,7 +138,7 @@ class AlertTests(unittest.TestCase):
     def test_fires_matching_rules_only(self):
         fired = evaluate_alerts(self.RULES, self.QUOTES)
         self.assertEqual([r["id"] for r in fired], ["a1", "a2"])
-        self.assertEqual(fired[0]["actual"], 241)
+        self.assertEqual(fired[0]["actuals"][0]["actual"], 241)
 
     def test_skips_already_fired_rules(self):
         fired = evaluate_alerts(self.RULES, self.QUOTES, already_fired={"a1"})

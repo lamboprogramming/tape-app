@@ -41,6 +41,14 @@ def size_option_contracts(account: float, risk_pct: float, premium: float,
     }
 
 
+DEFAULT_PORTFOLIOS = (500, 800, 1000, 1500, 2000)
+
+
+def size_scenarios(premium: float, risk_pct: float, portfolios=DEFAULT_PORTFOLIOS, multiplier: int = 100) -> list[dict]:
+    """How many contracts fit at each portfolio size, for a fixed premium and risk %."""
+    return [{"portfolio": p, **size_option_contracts(p, risk_pct, premium, multiplier)} for p in portfolios]
+
+
 def _check_positive(**values: float) -> None:
     for name, value in values.items():
         if value is None or value <= 0:

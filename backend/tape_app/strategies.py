@@ -103,3 +103,74 @@ def payoff_curve(position: dict, low: float, high: float, steps: int = 50) -> li
         {"underlying": round(low + i * step, 4), "pnl": payoff_at_expiry(position, low + i * step)}
         for i in range(steps)
     ]
+
+
+def build_iron_condor(put_long: float, put_short: float, call_short: float, call_long: float,
+                      put_long_premium: float, put_short_premium: float,
+                      call_short_premium: float, call_long_premium: float,
+                      multiplier: int = 100) -> dict:
+    """Iron condor: a bull put spread below spot plus a bear call spread above it.
+
+    Strikes must read put_long < put_short < call_short < call_long.
+    Net premium is received (credit). Max loss is the wider side minus the credit.
+    """
+    if not put_long < put_short < call_short < call_long:
+        raise ValueError("iron condor strikes must satisfy put_long < put_short < call_short < call_long")
+    put_side = build_vertical("bull_put", put_long, put_short, put_long_premium, put_short_premium, multiplier)
+    call_side = build_vertical("bear_call", call_long, call_short, call_long_premium, call_short_premium, multiplier)
+    credit = put_side["max_profit"] + call_side["max_profit"]
+    wider = max(put_side["width"], call_side["width"]) * multiplier
+    max_loss = round(wider - credit, 2)
+    return {
+        "strategy": "iron_condor",
+        "net_type": "credit",
+        "max_profit": round(credit, 2),
+        "max_loss": max_loss,
+        "breakevens": [round(put_short - (credit / multiplier), 4), round(call_short + (credit / multiplier), 4)],
+        "put_side": put_side,
+        "call_side": call_side,
+        "multiplier": multiplier,
+    }
+
+
+def iron_condor_payoff(position: dict, underlying: float) -> float:
+    """Dollar P&L at expiration for a built iron condor."""
+    return round(payoff_at_expiry(position["put_side"], underlying) + payoff_at_expiry(position["call_side"], underlying), 2)
+
+
+def build_naked(kind: str, side: str, strike: float, premium: float, multiplier: int = 100) -> dict:
+    """Single-leg short or long option with its risk, for the strategy builder.
+
+    Short calls have unlimited risk. Short puts risk strike minus premium per share.
+    Long options cannot lose more than the premium paid.
+    """
+    if kind not in ("call", "put"):
+        raise ValueError("kind must be 'call' or 'put'")
+    if side not in ("long", "short"):
+        raise ValueError("side must be 'long' or 'short'")
+    if strike <= 0 or premium <= 0:
+        raise ValueError("strike and premium must be positive")
+    warnings = []
+    if side == "long":
+        max_loss, max_profit, net_type = round(premium * multiplier, 2), None, "debit"
+        breakeven = strike + premium if kind == "call" else strike - premium
+    else:
+        net_type = "credit"
+        max_profit = round(premium * multiplier, 2)
+        if kind == "call":
+            max_loss = None  # unlimited
+            breakeven = strike + premium
+            warnings.append("Naked short call: risk is unlimited if the underlying keeps rising.")
+        else:
+            max_loss = round((strike - premium) * multiplier, 2)
+            breakeven = strike - premium
+            warnings.append("Naked short put: risk is the strike minus premium if the underlying goes to zero.")
+    return {
+        "strategy": f"{side}_{kind}",
+        "net_type": net_type,
+        "max_profit": max_profit,
+        "max_loss": max_loss,
+        "breakeven": round(breakeven, 4),
+        "warnings": warnings,
+        "multiplier": multiplier,
+    }

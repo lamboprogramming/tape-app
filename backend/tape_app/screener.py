@@ -19,6 +19,8 @@ FIELDS: dict[str, Callable[[dict], Any]] = {
     "bid": lambda q: q.get("bid"),
     "ask": lambda q: q.get("ask"),
     "spread": lambda q: (q["ask"] - q["bid"]) if q.get("ask") is not None and q.get("bid") is not None else None,
+    "range_pct": lambda q: q.get("range_pct"),
+    "range_dollars": lambda q: q.get("range_dollars"),
 }
 
 OPS: dict[str, Callable[[Any, Any], bool]] = {
