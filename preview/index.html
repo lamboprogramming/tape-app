@@ -9,10 +9,24 @@
   :root {
     --bg: #0b0e13; --panel: #12161d; --panel-2: #1a2029; --line: #232b37;
     --text: #e8ecf2; --muted: #8b95a7; --up: #2ecc71; --down: #ff5c6c;
-    --accent: #f5b942; --info: #5aa9ff;
+    --accent: #f5b942; --on-accent: #151515; --info: #5aa9ff;
+    --tabbar: rgba(18,22,29,.96); --down-text: #ff5c6c;
     color-scheme: dark;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 15px;
+  }
+  /* Themes: default is the dark gold theme above. */
+  :root[data-theme="orange"] {
+    --bg: #000000; --panel: #0f0f0f; --panel-2: #1a1a1a; --line: #262626;
+    --text: #f2f2f2; --muted: #9a9a9a; --up: #17c964; --down: #ff4d4d;
+    --accent: #ff6a1a; --on-accent: #000000; --down-text: #ff4d4d;
+    --tabbar: rgba(0,0,0,.96); color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --panel: #ffffff; --panel-2: #eef1f5; --line: #dfe3ea;
+    --text: #141820; --muted: #6b7385; --up: #1f9d55; --down: #d64545;
+    --accent: #1d4ed8; --on-accent: #ffffff; --down-text: #c03535;
+    --tabbar: rgba(255,255,255,.96); color-scheme: light;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
@@ -46,7 +60,7 @@
   .addbar { display: flex; gap: 8px; padding: 0 16px 6px; }
   input, select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; width: 100%; }
   .btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .btn.primary { background: var(--accent); color: #151515; border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
   .btn.block { width: 100%; }
   .btn:disabled { opacity: .45; }
   .hint { color: var(--muted); font-size: 12px; margin: 8px 16px 0; line-height: 1.4; }
@@ -63,7 +77,7 @@
   .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 10px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { flex: none; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; }
-  .chip.on { background: var(--accent); color: #151515; border-color: var(--accent); font-weight: 700; }
+  .chip.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 700; }
   .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; margin: 0 16px 10px; }
   .seg button { background: none; border: 0; color: var(--muted); padding: 8px; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; }
   .seg button.on { background: var(--panel-2); color: var(--text); }
@@ -105,7 +119,7 @@
   .scen-row:last-child { border-bottom: 0; }
   .scen-row.head { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
   .scen-row > div:not(:first-child) { text-align: right; }
-  .warn { background: rgba(255,92,108,.08); border: 1px solid #6b2630; color: #ffb3bb; border-radius: 10px; padding: 9px 11px; font-size: 13px; margin-top: 10px; line-height: 1.4; }
+  .warn { background: rgba(255,92,108,.08); border: 1px solid var(--down); color: var(--down-text); border-radius: 10px; padding: 9px 11px; font-size: 13px; margin-top: 10px; line-height: 1.4; }
   /* sheet */
   .sheet-wrap { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; z-index: 20; }
   .sheet-wrap.open { display: block; }
@@ -115,7 +129,7 @@
   .sheet-close { position: absolute; right: 12px; top: 10px; }
 
   /* bottom nav */
-  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(18,22,29,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + env(safe-area-inset-bottom)); z-index: 10; }
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--tabbar); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + env(safe-area-inset-bottom)); z-index: 10; }
   .tabbar button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 0; cursor: pointer; }
   .tabbar button .ico { font-size: 18px; line-height: 1; }
   .tabbar button.on { color: var(--text); }
@@ -347,6 +361,15 @@
       <p class="hint" style="margin:0">Checking…</p>
     </div>
     <p class="hint">Quotes and option chains come from the app's own data feed, so you don't need a brokerage account of your own.</p>
+    <div class="section-title"><span>Appearance</span></div>
+    <div class="card" style="padding:14px">
+      <div class="chips" style="padding:0">
+        <button class="chip" data-theme-pick="dark">Dark gold</button>
+        <button class="chip" data-theme-pick="orange">Black &amp; orange</button>
+        <button class="chip" data-theme-pick="light">Light</button>
+      </div>
+      <p class="hint" style="padding:0;margin:10px 0 0">Applies to every screen on this device.</p>
+    </div>
     <div class="section-title"><span>Session</span></div>
     <div class="card"><div class="row" id="acc-signout"><div class="main"><div class="sym">Sign out</div><div class="meta">Ends this device's session</div></div></div></div>
   </section>
@@ -919,7 +942,17 @@
     } catch (e) { toast(e.message); }
   });
 
+  // ---------- appearance ----------
+  function setTheme(t) {
+    if (t === "dark") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.dataset.theme = t;
+    localStorage.setItem("tape.theme", t);
+    document.querySelectorAll("[data-theme-pick]").forEach((x) => x.classList.toggle("on", x.dataset.themePick === t));
+  }
+  document.querySelectorAll("[data-theme-pick]").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.themePick)));
+
   // ---------- boot ----------
+  setTheme(localStorage.getItem("tape.theme") || "light");
   if (account) enterApp(); else $("tabbar").style.display = "none";
 })();
 </script>

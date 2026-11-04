@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tape App — color options</title>
+<style>
+  body { margin: 0; padding: 16px; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #e9ecf1; color: #111; }
+  h1 { font-size: 18px; margin: 4px 0 14px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .opt { border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+  .label { padding: 10px 14px; font-weight: 700; font-size: 14px; background: #fff; color: #111; border-bottom: 1px solid #ddd; }
+  .label small { display: block; font-weight: 400; color: #666; font-size: 12px; margin-top: 2px; }
+  .screen { padding: 12px 0 14px; }
+  .topbar { padding: 4px 14px 10px; font-size: 15px; font-weight: 700; }
+  .row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-top: 1px solid var(--line); }
+  .row .main { flex: 1; min-width: 0; }
+  .row .sym { font-weight: 700; font-size: 15px; }
+  .row .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .row .price { font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 600; }
+  .pill { min-width: 78px; text-align: center; padding: 7px 8px; border-radius: 8px; font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .pill.up { background: var(--up); color: var(--on-up); }
+  .pill.down { background: var(--down); color: var(--on-down); }
+  .banner { margin: 8px 14px 0; background: var(--panel-2); color: var(--accent); text-align: center; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+  .chip { display: inline-block; margin: 8px 0 0 14px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--accent); color: var(--on-accent); }
+  .chip.off { background: var(--panel-2); color: var(--muted); }
+  .toggle { display: flex; margin: 8px 14px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .toggle span { flex: 1; text-align: center; padding: 6px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .toggle span.on { background: var(--panel-2); color: var(--text); }
+  .strike { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); }
+  .strike.atm { background: var(--atm); }
+  .strike .k { font-weight: 700; }
+  .strike .pb { background: var(--panel-2); color: var(--text); padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; border: 1px solid var(--line); }
+  .strike .chg { font-size: 12px; font-weight: 700; margin-top: 3px; text-align: right; }
+  .up-t { color: var(--up-text); } .down-t { color: var(--down-text); }
+  .btn { margin: 10px 14px 12px; padding: 10px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 13px; background: var(--accent); color: var(--on-accent); }
+</style>
+</head>
+<body>
+<h1>Color options: pick one (or tell me a mix)</h1>
+<div class="grid">
+
+  <!-- 1 Current -->
+  <div class="opt" style="--bg:#0b0e13;--panel:#12161d;--panel-2:#1a2029;--line:#232b37;--text:#e8ecf2;--muted:#8b95a7;--up:#2ecc71;--on-up:#06120b;--down:#ff5c6c;--on-down:#1a0408;--up-text:#2ecc71;--down-text:#ff5c6c;--accent:#f5b942;--on-accent:#151515;--atm:rgba(245,185,66,.08)">
+    <div class="label">1. Current: black, gold, green and red<small>What the preview uses today</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+  <!-- 2 Navy + teal -->
+  <div class="opt" style="--bg:#0d1526;--panel:#14203a;--panel-2:#1b2a4a;--line:#27385c;--text:#e6edf8;--muted:#8fa0bf;--up:#2dd4a7;--on-up:#04221a;--down:#f0677a;--on-down:#2a0710;--up-text:#2dd4a7;--down-text:#f0677a;--accent:#38c8d8;--on-accent:#06202a;--atm:rgba(56,200,216,.08)">
+    <div class="label">2. Navy and teal<small>Calmer, blue-based dark theme</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+  <!-- 3 Light -->
+  <div class="opt" style="--bg:#f6f7f9;--panel:#ffffff;--panel-2:#eef1f5;--line:#dfe3ea;--text:#141820;--muted:#6b7385;--up:#1f9d55;--on-up:#ffffff;--down:#d64545;--on-down:#ffffff;--up-text:#178a48;--down-text:#c03535;--accent:#1d4ed8;--on-accent:#ffffff;--atm:rgba(29,78,216,.06)">
+    <div class="label">3. Light theme<small>White background, dark text, bold accent</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+  <!-- 4 Orange on black -->
+  <div class="opt" style="--bg:#000000;--panel:#0f0f0f;--panel-2:#1a1a1a;--line:#262626;--text:#f2f2f2;--muted:#9a9a9a;--up:#17c964;--on-up:#00140a;--down:#ff4d4d;--on-down:#1a0000;--up-text:#17c964;--down-text:#ff4d4d;--accent:#ff6a1a;--on-accent:#000000;--atm:rgba(255,106,26,.08)">
+    <div class="label">4. Black and orange<small>Bold, high-energy, close to the chain screenshot</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+  <!-- 5 Forest / muted -->
+  <div class="opt" style="--bg:#0e1411;--panel:#151d18;--panel-2:#1d2822;--line:#2a3a31;--text:#e7efe9;--muted:#8fa397;--up:#7bd389;--on-up:#0a1b0e;--down:#e6876b;--on-down:#241009;--up-text:#7bd389;--down-text:#e6876b;--accent:#c9b458;--on-accent:#171408;--atm:rgba(201,180,88,.08)">
+    <div class="label">5. Forest and sand<small>Muted, low-glare, easy on the eyes at night</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+  <!-- 6 Colorblind-safe -->
+  <div class="opt" style="--bg:#0b0e13;--panel:#12161d;--panel-2:#1a2029;--line:#232b37;--text:#e8ecf2;--muted:#8b95a7;--up:#3b9cff;--on-up:#04101f;--down:#ff9f1c;--on-down:#1f1200;--up-text:#3b9cff;--down-text:#ff9f1c;--accent:#c58cff;--on-accent:#14071f;--atm:rgba(197,140,255,.08)">
+    <div class="label">6. Colorblind-safe<small>Blue for gains and orange for losses, so red and green never carry the meaning alone</small></div>
+    <div class="screen" style="background:var(--bg);color:var(--text)">
+      <div class="topbar">Watchlist</div>
+      <div class="row"><div class="main"><div class="sym">SPY</div><div class="meta">Prev 580.00 · H 581.20</div></div><div class="price">$580.77</div><div class="pill up">+0.13%</div></div>
+      <div class="row"><div class="main"><div class="sym">QQQ</div><div class="meta">Prev 500.00 · H 500.71</div></div><div class="price">$499.20</div><div class="pill down">-0.16%</div></div>
+      <div class="banner">Share price: $580.77</div>
+      <div class="strike atm"><div><div class="k">580</div><div class="meta">at the money</div></div><div class="pb">$1.02</div></div>
+      <div class="btn">Add to options watchlist</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
