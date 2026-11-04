@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0e13" />
+<title>Tape App — preview</title>
+<style>
+  :root {
+    --bg: #0b0e13; --panel: #12161d; --panel-2: #1a2029; --line: #232b37;
+    --text: #e8ecf2; --muted: #8b95a7; --up: #2ecc71; --down: #ff5c6c;
+    --accent: #f5b942; --info: #5aa9ff;
+    color-scheme: dark;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+  body { display: flex; justify-content: center; }
+  #app { width: 100%; max-width: 480px; min-height: 100%; position: relative; display: flex; flex-direction: column; }
+  .screen { display: none; flex: 1; flex-direction: column; padding: 0 0 92px; }
+  .screen.active { display: flex; }
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  .topbar h1 { font-size: 20px; margin: 0; flex: 1; font-weight: 700; letter-spacing: .01em; }
+  .topbar .sub { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .iconbtn { background: var(--panel-2); border: 1px solid var(--line); color: var(--text); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; font-size: 16px; flex: none; }
+  .pad { padding: 0 16px; }
+  .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; margin: 0 16px; overflow: hidden; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 14px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .row:last-child { border-bottom: 0; }
+  .row:active { background: var(--panel-2); }
+  .row .main { flex: 1; min-width: 0; }
+  .row .sym { font-weight: 700; font-size: 16px; }
+  .row .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .row .price { text-align: right; font-variant-numeric: tabular-nums; }
+  .row .price strong { display: block; font-size: 16px; }
+  .chg { font-variant-numeric: tabular-nums; font-size: 13px; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--muted); }
+  .flash-up { animation: flashUp .9s ease-out; } .flash-down { animation: flashDown .9s ease-out; }
+  @keyframes flashUp { from { background: rgba(46,204,113,.22); } to { background: transparent; } }
+  @keyframes flashDown { from { background: rgba(255,92,108,.22); } to { background: transparent; } }
+  .ghost { background: none; border: 0; color: var(--muted); font-size: 18px; padding: 6px 8px; cursor: pointer; }
+  .reorder { display: flex; flex-direction: column; gap: 0; }
+  .reorder button { background: none; border: 0; color: var(--muted); padding: 0 4px; cursor: pointer; font-size: 12px; line-height: 14px; }
+  .addbar { display: flex; gap: 8px; padding: 0 16px 6px; }
+  input, select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; width: 100%; }
+  .btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn.primary { background: var(--accent); color: #151515; border-color: var(--accent); }
+  .btn.block { width: 100%; }
+  .btn:disabled { opacity: .45; }
+  .hint { color: var(--muted); font-size: 12px; margin: 8px 16px 0; line-height: 1.4; }
+  .empty { color: var(--muted); text-align: center; padding: 26px 16px; font-size: 14px; }
+
+  /* symbol view */
+  .quote-head { padding: 4px 16px 6px; }
+  .quote-head .big { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .quote-head .chg { font-size: 15px; margin-top: 2px; }
+  .ohlc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 16px 0; }
+  .ohlc div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 7px 8px; }
+  .ohlc small { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .ohlc strong { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 10px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; }
+  .chip.on { background: var(--accent); color: #151515; border-color: var(--accent); font-weight: 700; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px; margin: 0 16px 10px; }
+  .seg button { background: none; border: 0; color: var(--muted); padding: 8px; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; }
+  .seg button.on { background: var(--panel-2); color: var(--text); }
+  .strike-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr .8fr; gap: 8px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .strike-row:last-child { border-bottom: 0; }
+  .strike-row:active { background: var(--panel-2); }
+  .strike-row.atm { background: rgba(245,185,66,.07); }
+  .strike-row .k { font-weight: 700; }
+  .strike-row .k small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+  .strike-row .r { text-align: right; }
+  .strike-row .hdr { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; }
+  .strike-head { display: grid; grid-template-columns: 1.1fr 1fr 1fr .8fr; gap: 8px; padding: 0 14px 6px; }
+  .strike-head div { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .strike-head div:not(:first-child) { text-align: right; }
+
+  /* contract sheet */
+  .contract-head { padding: 4px 16px 0; }
+  .contract-head .name { font-size: 20px; font-weight: 700; }
+  .contract-head .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .contract-price { padding: 12px 16px 4px; }
+  .contract-price .big { font-size: 38px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .contract-price .delta { font-size: 15px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 10px 16px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .stats div { padding: 11px 14px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+  .stats div:nth-child(2n) { border-right: 0; }
+  .stats div:nth-last-child(-n+2) { border-bottom: 0; }
+  .stats span { color: var(--muted); font-size: 13px; }
+  .stats b { font-size: 14px; font-weight: 600; }
+  .daybar { margin: 14px 16px 0; }
+  .daybar .track { position: relative; height: 6px; background: var(--panel-2); border-radius: 999px; }
+  .daybar .fill { position: absolute; top: 0; bottom: 0; background: var(--line); border-radius: 999px; }
+  .daybar .mark { position: absolute; top: -5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--bg); }
+  .daybar .labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
+  .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+
+  /* sheet */
+  .sheet-wrap { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; z-index: 20; }
+  .sheet-wrap.open { display: block; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; background: var(--bg); border-top: 1px solid var(--line); border-radius: 18px 18px 0 0; max-height: 92%; overflow-y: auto; padding-bottom: 22px; transform: translateY(100%); transition: transform .22s ease-out; }
+  .sheet-wrap.open .sheet { transform: none; }
+  .sheet .grabber { width: 38px; height: 5px; background: var(--line); border-radius: 999px; margin: 8px auto 2px; }
+  .sheet-close { position: absolute; right: 12px; top: 10px; }
+
+  /* bottom nav */
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(18,22,29,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + env(safe-area-inset-bottom)); z-index: 10; }
+  .tabbar button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 0; cursor: pointer; }
+  .tabbar button .ico { font-size: 18px; line-height: 1; }
+  .tabbar button.on { color: var(--text); }
+  .tabbar button.on .ico { color: var(--accent); }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--muted); }
+  .status-dot.ok { background: var(--up); } .status-dot.bad { background: var(--down); }
+  .toast { position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); background: var(--panel-2); border: 1px solid var(--line); padding: 10px 14px; border-radius: 10px; font-size: 13px; max-width: 90%; display: none; z-index: 30; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .toast.show { display: block; }
+  .login { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 28px; gap: 12px; }
+  .login h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: .04em; }
+  .login h1 span { color: var(--accent); }
+  .login p { color: var(--muted); margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
+  .login label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .label { font-size: 12px; color: var(--muted); margin: 10px 0 4px; display: block; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .list-tools { display: flex; gap: 8px; padding: 0 16px 10px; }
+  .pill { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .alert-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 14px; border-bottom: 1px solid var(--line); }
+  .alert-row:last-child { border-bottom: 0; }
+  .screen-filter { display: grid; grid-template-columns: 1.2fr .8fr 1fr auto; gap: 6px; margin: 0 16px 6px; }
+  .screen-filter input, .screen-filter select { padding: 9px 8px; font-size: 13px; }
+  .result-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .result-row:last-child { border-bottom: 0; }
+  .result-row .r { text-align: right; }
+  .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 16px 0; }
+  .metric-grid div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .metric-grid small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .metric-grid strong { font-size: 17px; font-variant-numeric: tabular-nums; }
+  svg.curve { width: 100%; height: 160px; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .mt { margin-top: 12px; }
+  .spacer { height: 8px; }
+  @media (min-width: 481px) { .tabbar, .sheet { max-width: 480px; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- LOGIN (local stand-in until real accounts exist) -->
+  <section class="login" id="screen-login">
+    <h1>TAPE<span>.</span>APP</h1>
+    <p>Your watchlist, options chains and live quotes, all in one place. Market data is included with your membership.</p>
+    <label for="login-email">Email</label>
+    <input id="login-email" type="email" placeholder="you@example.com" autocomplete="username" />
+    <label for="login-pass">Password</label>
+    <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+    <div class="spacer"></div>
+    <button class="btn primary block" id="login-go">Sign in</button>
+    <p class="hint" style="margin:6px 0 0">Preview only: this signs you in on this device. Real sign-in comes with the account system.</p>
+  </section>
+
+  <!-- WATCHLIST (home) -->
+  <section class="screen" id="screen-watchlist">
+    <div class="topbar">
+      <div style="flex:1"><h1 id="wl-title">Watchlist</h1><span class="sub" id="wl-sub">Live quotes</span></div>
+      <span class="pill" id="live-pill"><span class="status-dot" id="live-dot"></span><span id="live-text">connecting</span></span>
+    </div>
+    <div class="addbar">
+      <input id="wl-add-input" placeholder="Add a symbol, e.g. NVDA" maxlength="12" autocapitalize="characters" />
+      <button class="btn primary" id="wl-add">Add</button>
+    </div>
+    <div class="section-title"><span id="wl-count">0 symbols</span><span class="pill">tap to open</span></div>
+    <div class="card" id="wl-list"></div>
+    <div class="empty" id="wl-empty" style="display:none">Your watchlist is empty. Add a symbol above.</div>
+    <p class="hint">Prices update live. Change % is measured against the previous close.</p>
+  </section>
+
+  <!-- SYMBOL (underlying + option chain) -->
+  <section class="screen" id="screen-symbol">
+    <div class="topbar">
+      <button class="iconbtn" data-back aria-label="Back">←</button>
+      <div style="flex:1; min-width:0"><h1 id="sym-title">—</h1><span class="sub" id="sym-sub">Options</span></div>
+    </div>
+    <div class="quote-head">
+      <div class="big" id="sym-last">—</div>
+      <div class="chg" id="sym-chg">—</div>
+    </div>
+    <div class="ohlc">
+      <div><small>Prev close</small><strong id="sym-prev">—</strong></div>
+      <div><small>Open</small><strong id="sym-open">—</strong></div>
+      <div><small>High</small><strong id="sym-high">—</strong></div>
+      <div><small>Low</small><strong id="sym-low">—</strong></div>
+    </div>
+    <div class="section-title" style="margin-top:16px"><span>Expiration</span><span class="pill" id="sym-exp-note"></span></div>
+    <div class="chips" id="sym-exps"></div>
+    <div class="seg" id="sym-side">
+      <button data-side="buy" class="on">Buy</button>
+      <button data-side="sell">Sell</button>
+    </div>
+    <div class="seg" id="sym-kind" style="margin-top:-2px">
+      <button data-kind="call" class="on">Calls</button>
+      <button data-kind="put">Puts</button>
+    </div>
+    <div class="strike-head"><div>Strike</div><div>Price</div><div>Change</div><div>Volume</div></div>
+    <div class="card" id="sym-chain"></div>
+    <div class="empty" id="sym-empty">Choose an expiration to load contracts.</div>
+    <p class="hint">Tap a strike to see its details. The highlighted row is closest to the current price.</p>
+  </section>
+
+  <!-- ALERTS -->
+  <section class="screen" id="screen-alerts">
+    <div class="topbar"><div style="flex:1"><h1>Alerts</h1><span class="sub">Get notified when a price crosses your level</span></div>
+      <button class="btn" id="al-check">Check now</button></div>
+    <div class="card" id="al-list"></div>
+    <div class="empty" id="al-empty">No alerts yet. Open a contract and tap Set alert.</div>
+  </section>
+
+  <!-- TOOLS: sizing, spreads, screener -->
+  <section class="screen" id="screen-tools">
+    <div class="topbar"><div style="flex:1"><h1>Tools</h1><span class="sub">Size a trade, price a spread, or screen</span></div></div>
+
+    <div class="section-title"><span>Position size</span></div>
+    <div class="card" style="padding:14px">
+      <div class="field-row">
+        <div><span class="label">Account ($)</span><input id="sz-acct" type="number" /></div>
+        <div><span class="label">Risk per trade (%)</span><input id="sz-risk" type="number" step="0.1" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Entry</span><input id="sz-entry" type="number" step="0.01" value="50" /></div>
+        <div><span class="label">Stop</span><input id="sz-stop" type="number" step="0.01" value="48" /></div>
+      </div>
+      <button class="btn primary block mt" id="sz-go">Size shares</button>
+      <div class="metric-grid" id="sz-out"></div>
+    </div>
+
+    <div class="section-title"><span>Vertical spread</span></div>
+    <div class="card" style="padding:14px">
+      <span class="label">Structure</span>
+      <select id="sp-strategy">
+        <option value="bull_call">Bull call (debit)</option>
+        <option value="bear_put">Bear put (debit)</option>
+        <option value="bull_put">Bull put (credit)</option>
+        <option value="bear_call">Bear call (credit)</option>
+      </select>
+      <div class="field-row">
+        <div><span class="label">Long strike</span><input id="sp-long" type="number" value="100" /></div>
+        <div><span class="label">Short strike</span><input id="sp-short" type="number" value="110" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Long premium</span><input id="sp-lp" type="number" step="0.01" value="4.00" /></div>
+        <div><span class="label">Short premium</span><input id="sp-sp" type="number" step="0.01" value="1.50" /></div>
+      </div>
+      <button class="btn primary block mt" id="sp-go">Build spread</button>
+      <svg class="curve mt" id="sp-curve" viewBox="0 0 600 160" preserveAspectRatio="none" style="display:none"></svg>
+      <div class="metric-grid" id="sp-out"></div>
+    </div>
+
+    <div class="section-title"><span>Screener</span><span class="pill" id="scr-count">0 rules</span></div>
+    <div class="card" style="padding:14px">
+      <span class="label">Universe (comma separated)</span>
+      <input id="scr-universe" value="AAPL, MSFT, NVDA, TSLA, AMZN, SPY, QQQ, AMD, META, GOOGL" />
+      <div class="mt" id="scr-filters"></div>
+      <div class="field-row mt">
+        <button class="btn block" id="scr-add">+ Filter</button>
+        <button class="btn primary block" id="scr-run">Run</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px" id="scr-results"></div>
+    <div class="empty" id="scr-empty" style="display:none">Run a screen to see matches.</div>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section class="screen" id="screen-account">
+    <div class="topbar"><div style="flex:1"><h1>Account</h1><span class="sub" id="acc-sub">—</span></div></div>
+    <div class="section-title"><span>Profile</span></div>
+    <div class="card" style="padding:14px">
+      <span class="label">Display name</span>
+      <input id="acc-name" />
+      <div class="field-row">
+        <div><span class="label">Default account ($)</span><input id="acc-size" type="number" /></div>
+        <div><span class="label">Default risk (%)</span><input id="acc-risk" type="number" step="0.1" /></div>
+      </div>
+      <button class="btn primary block mt" id="acc-save">Save</button>
+    </div>
+    <div class="section-title"><span>Market data</span></div>
+    <div class="card" style="padding:14px" id="acc-data">
+      <p class="hint" style="margin:0">Checking…</p>
+    </div>
+    <p class="hint">Quotes and option chains come from the app's own data feed, so you don't need a brokerage account of your own.</p>
+    <div class="section-title"><span>Session</span></div>
+    <div class="card"><div class="row" id="acc-signout"><div class="main"><div class="sym">Sign out</div><div class="meta">Ends this device's session</div></div></div></div>
+  </section>
+
+  <!-- CONTRACT SHEET -->
+  <div class="sheet-wrap" id="contract-wrap">
+    <div class="sheet" id="contract-sheet">
+      <div class="grabber"></div>
+      <button class="iconbtn sheet-close" id="contract-close" aria-label="Close">✕</button>
+      <div class="contract-head">
+        <div class="name" id="ct-name">—</div>
+        <div class="sub" id="ct-sub">—</div>
+      </div>
+      <div class="contract-price">
+        <div class="big" id="ct-last">—</div>
+        <div class="delta" id="ct-delta">—</div>
+      </div>
+      <div class="daybar" id="ct-daybar"></div>
+      <div class="stats" id="ct-stats"></div>
+      <div class="cta">
+        <button class="btn block" id="ct-alert">Set alert</button>
+        <button class="btn primary block" id="ct-spread">Price a spread</button>
+      </div>
+      <p class="hint" id="ct-note">Live: updates every few seconds while open.</p>
+    </div>
+  </div>
+
+  <!-- ALERT SHEET -->
+  <div class="sheet-wrap" id="alert-wrap">
+    <div class="sheet" style="padding:0 16px">
+      <div class="grabber"></div>
+      <h2 style="font-size:18px;margin:12px 0 4px">Set a price alert</h2>
+      <p class="hint" style="margin:0 0 12px" id="al-sheet-name">—</p>
+      <span class="label">Notify me when the price</span>
+      <div class="field-row">
+        <select id="al-op"><option value=">=">rises to or above</option><option value="<=">falls to or below</option></select>
+        <input id="al-value" type="number" step="0.01" />
+      </div>
+      <div class="field-row mt">
+        <button class="btn block" id="al-cancel">Cancel</button>
+        <button class="btn primary block" id="al-save">Save alert</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tabbar" id="tabbar">
+    <button data-tab="watchlist" class="on"><span class="ico">≡</span>Watchlist</button>
+    <button data-tab="alerts"><span class="ico">◔</span>Alerts</button>
+    <button data-tab="tools"><span class="ico">⚙</span>Tools</button>
+    <button data-tab="account"><span class="ico">◉</span>Account</button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(() => {
+  // ---------- helpers ----------
+  const API = localStorage.getItem("tape.api") || "http://127.0.0.1:4000";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const num = (n, d = 2) => (n == null || Number.isNaN(n) ? "—" : Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
+  const usd = (n, d = 2) => (n == null || Number.isNaN(n) ? "—" : (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
+  const signed = (n, d = 2) => (n == null ? "—" : (n > 0 ? "+" : "") + num(n, d));
+  const pct = (n) => (n == null ? "—" : (n > 0 ? "+" : "") + num(n, 2) + "%");
+  const vol = (n) => (n == null ? "—" : Number(n).toLocaleString());
+  const cls = (n) => (n > 0 ? "up" : n < 0 ? "down" : "flat");
+  let toastTimer;
+  const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2400); };
+  async function api(path, opts) {
+    const res = await fetch(API + path, opts);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error + (body.details ? ": " + body.details.join("; ") : ""));
+    return body;
+  }
+  const post = (path, body) => api(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+
+  // ---------- local profile (stand-in for server accounts) ----------
+  const KEY = "tape.account";
+  const blank = (email) => ({ email, name: email.split("@")[0] || "Member", accountSize: 10000, riskPct: 1, watchlist: ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"], alerts: [], screen: [] });
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
+  let account = load();
+  const save = () => localStorage.setItem(KEY, JSON.stringify(account));
+
+  // ---------- navigation ----------
+  const stack = [];
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === "screen-" + id));
+  }
+  function setTab(tab) {
+    document.querySelectorAll("#tabbar button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+    showScreen(tab);
+    if (tab === "alerts") renderAlerts();
+    if (tab === "account") renderAccount();
+    if (tab === "tools") prefillTools();
+    if (tab === "watchlist") { renderWatchlist(); openTape(); }
+  }
+  document.querySelectorAll("#tabbar button").forEach((b) => b.addEventListener("click", () => { stack.length = 0; setTab(b.dataset.tab); }));
+  document.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", () => { stack.pop(); setTab("watchlist"); }));
+
+  // ---------- login ----------
+  function enterApp() {
+    $("screen-login").style.display = "none";
+    $("tabbar").style.display = "grid";
+    setTab("watchlist");
+    checkApi();
+  }
+  $("login-go").addEventListener("click", () => {
+    const email = $("login-email").value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Enter a valid email address.");
+    if (!account || account.email !== email) account = blank(email);
+    save(); enterApp();
+  });
+
+  // ---------- status ----------
+  let provider = "—";
+  async function checkApi() {
+    try {
+      const h = await api("/api/health");
+      provider = h.provider;
+      $("acc-sub").textContent = `Signed in as ${account?.email || "—"}`;
+    } catch {
+      provider = "offline";
+    }
+    renderAccountData();
+  }
+
+  // ---------- watchlist (live via SSE) ----------
+  let es = null;
+  const quotes = new Map();
+  const prevLast = new Map();
+  function openTape() {
+    if (!account) return;
+    if (es) es.close();
+    const symbols = account.watchlist;
+    if (!symbols.length) { setLive("idle", null); quotes.clear(); renderWatchlist(); return; }
+    setLive("connecting", null);
+    es = new EventSource(`${API}/api/tape?symbols=${encodeURIComponent(symbols.join(","))}&interval=2`);
+    es.onopen = () => setLive("live", true);
+    es.addEventListener("quotes", (e) => {
+      const { quotes: list } = JSON.parse(e.data);
+      list.forEach((q) => {
+        const before = prevLast.get(q.symbol);
+        quotes.set(q.symbol, q);
+        prevLast.set(q.symbol, q.last);
+        flashRow(q.symbol, before, q.last);
+      });
+      renderWatchlist();
+      if (currentSymbol) renderSymbolQuote();
+    });
+    es.addEventListener("error", () => setLive("offline", false));
+  }
+  function setLive(text, ok) {
+    $("live-text").textContent = text;
+    $("live-dot").className = "status-dot " + (ok === true ? "ok" : ok === false ? "bad" : "");
+  }
+  function flashRow(symbol, before, now) {
+    if (before == null || before === now) return;
+    const row = document.querySelector(`[data-sym="${CSS.escape(symbol)}"]`);
+    if (!row) return;
+    row.classList.remove("flash-up", "flash-down"); void row.offsetWidth;
+    row.classList.add(now > before ? "flash-up" : "flash-down");
+  }
+  function renderWatchlist() {
+    const list = $("wl-list");
+    const symbols = account?.watchlist || [];
+    $("wl-count").textContent = `${symbols.length} symbol${symbols.length === 1 ? "" : "s"}`;
+    $("wl-empty").style.display = symbols.length ? "none" : "block";
+    list.innerHTML = symbols.map((s, i) => {
+      const q = quotes.get(s);
+      const up = q ? q.change_pct : null;
+      return `<div class="row" data-sym="${esc(s)}" data-open="${esc(s)}">
+        <div class="main"><div class="sym">${esc(s)}</div><div class="meta">Prev ${q ? usd(q.prev_close) : "—"} · H ${q ? usd(q.high) : "—"} · L ${q ? usd(q.low) : "—"}</div></div>
+        <div class="price"><strong>${q ? usd(q.last) : "—"}</strong><span class="chg ${cls(up)}">${q ? pct(up) : "—"}</span></div>
+        <div class="reorder">
+          <button data-up="${i}" aria-label="Move up">▲</button>
+          <button data-down="${i}" aria-label="Move down">▼</button>
+        </div>
+        <button class="ghost" data-remove="${i}" aria-label="Remove">✕</button>
+      </div>`;
+    }).join("");
+    list.querySelectorAll("[data-open]").forEach((r) => r.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      openSymbol(r.dataset.open);
+    }));
+    list.querySelectorAll("[data-remove]").forEach((b) => b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const sym = account.watchlist.splice(Number(b.dataset.remove), 1)[0];
+      quotes.delete(sym); save(); openTape(); renderWatchlist(); toast(`Removed ${sym}.`);
+    }));
+    list.querySelectorAll("[data-up]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); move(Number(b.dataset.up), -1); }));
+    list.querySelectorAll("[data-down]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); move(Number(b.dataset.down), 1); }));
+  }
+  function move(i, dir) {
+    const j = i + dir; const w = account.watchlist;
+    if (j < 0 || j >= w.length) return;
+    [w[i], w[j]] = [w[j], w[i]]; save(); renderWatchlist();
+  }
+  async function addSymbol() {
+    const sym = $("wl-add-input").value.trim().toUpperCase();
+    if (!/^[A-Z.\-]{1,12}$/.test(sym)) return toast("Enter a symbol like AAPL.");
+    if (account.watchlist.includes(sym)) return toast(`${sym} is already on your watchlist.`);
+    try {
+      await api(`/api/quotes?symbols=${encodeURIComponent(sym)}`);
+    } catch (e) { return toast(e.message); }
+    account.watchlist.push(sym); save(); $("wl-add-input").value = "";
+    openTape(); renderWatchlist(); toast(`Added ${sym}.`);
+  }
+  $("wl-add").addEventListener("click", addSymbol);
+  $("wl-add-input").addEventListener("keydown", (e) => { if (e.key === "Enter") addSymbol(); });
+
+  // ---------- symbol & chain ----------
+  let currentSymbol = null;
+  let expiration = null;
+  let side = "buy";
+  let kind = "call";
+  let chain = [];
+  let chainQuotes = new Map();
+  let chainTimer = null;
+
+  async function openSymbol(sym) {
+    currentSymbol = sym; expiration = null; chain = []; chainQuotes = new Map();
+    stack.push("symbol");
+    $("sym-title").textContent = sym; $("sym-sub").textContent = "Options";
+    showScreen("symbol");
+    renderSymbolQuote();
+    try {
+      const { expirations } = await api(`/api/options/${encodeURIComponent(sym)}/expirations`);
+      $("sym-exps").innerHTML = expirations.slice(0, 10).map((d, i) =>
+        `<button class="chip" data-exp="${d}">${i === 0 ? "Today" : formatDay(d)}</button>`).join("");
+      $("sym-exps").querySelectorAll("[data-exp]").forEach((b) => b.addEventListener("click", () => selectExpiration(b.dataset.exp)));
+      selectExpiration(expirations[0]);
+    } catch (e) { toast(e.message); }
+  }
+  function formatDay(d) {
+    const dt = new Date(d + "T12:00:00");
+    return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  async function selectExpiration(exp) {
+    expiration = exp;
+    $("sym-exps").querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", c.dataset.exp === exp));
+    $("sym-exp-note").textContent = exp;
+    await loadChain();
+    clearInterval(chainTimer);
+    chainTimer = setInterval(() => { if (currentSymbol && expiration) refreshChainQuotes(); }, 5000);
+  }
+  async function loadChain() {
+    try {
+      const s = await api(`/api/options/${encodeURIComponent(currentSymbol)}/summary?expiration=${expiration}`);
+      chain = s.strikes; chainSpot = s.spot;
+      await refreshChainQuotes();
+    } catch (e) { toast(e.message); }
+  }
+  let chainSpot = null;
+  async function refreshChainQuotes() {
+    const list = chain.filter((r) => r[kind]).map((r) => r[kind].symbol);
+    if (!list.length) return renderChain();
+    try {
+      const { quotes: qs } = await api(`/api/quotes?symbols=${encodeURIComponent(list.join(","))}`);
+      qs.forEach((q) => chainQuotes.set(q.symbol, q));
+    } catch (e) { /* keep last known values */ }
+    renderChain();
+  }
+  function renderSymbolQuote() {
+    const q = currentSymbol && quotes.get(currentSymbol);
+    $("sym-last").textContent = q ? usd(q.last) : "—";
+    $("sym-chg").innerHTML = q ? `<span class="${cls(q.change)}">${signed(q.change)} (${pct(q.change_pct)})</span> <span class="flat">vs prev close</span>` : "—";
+    $("sym-prev").textContent = q ? usd(q.prev_close) : "—";
+    $("sym-open").textContent = q ? usd(q.open) : "—";
+    $("sym-high").textContent = q ? usd(q.high) : "—";
+    $("sym-low").textContent = q ? usd(q.low) : "—";
+  }
+  function renderChain() {
+    const atm = chainSpot == null ? null : chain.reduce((best, r) => (best == null || Math.abs(r.strike - chainSpot) < Math.abs(best.strike - chainSpot) ? r : best), null);
+    const rows = chain.filter((r) => r[kind]);
+    $("sym-empty").style.display = rows.length ? "none" : "block";
+    $("sym-empty").textContent = rows.length ? "" : `No ${kind === "call" ? "calls" : "puts"} for this expiration.`;
+    $("sym-chain").innerHTML = rows.map((r) => {
+      const c = r[kind];
+      const q = chainQuotes.get(c.symbol);
+      const price = q ? q.last : c.last;
+      const ch = q ? q.change_pct : null;
+      const isAtm = atm && r.strike === atm.strike;
+      const dist = r.distance_pct == null ? "" : `${r.distance_pct > 0 ? "+" : ""}${num(r.distance_pct, 1)}% away`;
+      return `<div class="strike-row ${isAtm ? "atm" : ""}" data-occ="${esc(c.symbol)}" data-strike="${r.strike}">
+        <div class="k">${num(r.strike, 2)}${isAtm ? ' <small>at the money</small>' : `<small>${dist}</small>`}</div>
+        <div class="r">${usd(price)}</div>
+        <div class="r chg ${cls(ch)}">${pct(ch)}</div>
+        <div class="r">${vol(c.volume ?? q?.volume)}</div>
+      </div>`;
+    }).join("");
+    $("sym-chain").querySelectorAll("[data-occ]").forEach((el) => el.addEventListener("click", () => openContract(el.dataset.occ)));
+    $("sym-kind").querySelectorAll("[data-kind]").forEach((b) => b.classList.toggle("on", b.dataset.kind === kind));
+    $("sym-side").querySelectorAll("[data-side]").forEach((b) => b.classList.toggle("on", b.dataset.side === side));
+  }
+  $("sym-kind").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-kind]"); if (!b) return;
+    kind = b.dataset.kind; renderChain(); refreshChainQuotes();
+  });
+  $("sym-side").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-side]"); if (!b) return;
+    side = b.dataset.side; renderChain();
+  });
+
+  // ---------- contract sheet ----------
+  let contractSym = null;
+  let contractTimer = null;
+  let contractMeta = null;
+  async function openContract(occ) {
+    contractSym = occ;
+    const row = chain.find((r) => r.call?.symbol === occ || r.put?.symbol === occ);
+    contractMeta = row ? { ...(row.call?.symbol === occ ? row.call : row.put), strike: row.strike, kind: row.call?.symbol === occ ? "call" : "put" } : null;
+    $("contract-wrap").classList.add("open");
+    await refreshContract();
+    clearInterval(contractTimer);
+    contractTimer = setInterval(refreshContract, 4000);
+  }
+  async function refreshContract() {
+    if (!contractSym) return;
+    try {
+      const { quotes: [q] } = await api(`/api/quotes?symbols=${encodeURIComponent(contractSym)}`);
+      renderContract(q);
+    } catch (e) { toast(e.message); }
+  }
+  function renderContract(q) {
+    const m = contractMeta || {};
+    const title = `${currentSymbol} ${num(m.strike, 2)} ${m.kind === "put" ? "Put" : "Call"}`;
+    $("ct-name").textContent = title;
+    $("ct-sub").textContent = `Expires ${expiration || "—"} · ${contractSym}`;
+    $("ct-last").textContent = usd(q.last);
+    $("ct-delta").innerHTML = `<span class="${cls(q.change)}">${signed(q.change)} (${pct(q.change_pct)})</span> <span class="flat">vs previous close</span>`;
+    const mid = m.bid != null && m.ask != null ? (m.bid + m.ask) / 2 : null;
+    const stats = [
+      ["Previous close", usd(q.prev_close)],
+      ["Open", usd(q.open)],
+      ["High", usd(q.high)],
+      ["Low", usd(q.low)],
+      ["Bid", usd(q.bid)],
+      ["Ask", usd(q.ask)],
+      ["Mark", usd(mid)],
+      ["Volume", vol(q.volume)],
+      ["Open interest", vol(m.open_interest)],
+      ["vs open", q.open ? pct((q.last - q.open) / q.open * 100) : "—"],
+    ];
+    $("ct-stats").innerHTML = stats.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("");
+    // Where the contract trades inside its own day's range.
+    const lo = q.low, hi = q.high;
+    const bar = $("ct-daybar");
+    if (lo != null && hi != null && hi > lo && q.last != null) {
+      const p = Math.min(100, Math.max(0, (q.last - lo) / (hi - lo) * 100));
+      bar.innerHTML = `<div class="track"><div class="fill" style="left:0;right:0"></div><div class="mark" style="left:${p}%"></div></div>
+        <div class="labels"><span>Low ${usd(lo)}</span><span>${num(p, 0)}% of today's range</span><span>High ${usd(hi)}</span></div>`;
+    } else {
+      bar.innerHTML = `<div class="labels"><span>Day range not available yet</span></div>`;
+    }
+    $("ct-note").textContent = `Live: updates every few seconds while open. Prices are ${provider === "mock" ? "simulated" : "live from the data feed"}.`;
+  }
+  function closeContract() {
+    $("contract-wrap").classList.remove("open");
+    clearInterval(contractTimer); contractSym = null;
+  }
+  $("contract-close").addEventListener("click", closeContract);
+  $("contract-wrap").addEventListener("click", (e) => { if (e.target.id === "contract-wrap") closeContract(); });
+  $("ct-alert").addEventListener("click", () => {
+    if (!contractSym) return;
+    const q = chainQuotes.get(contractSym);
+    $("al-sheet-name").textContent = `${currentSymbol} ${num(contractMeta?.strike, 2)} ${contractMeta?.kind === "put" ? "Put" : "Call"} · ${contractSym}`;
+    $("al-value").value = q ? q.last.toFixed(2) : "";
+    $("alert-wrap").classList.add("open");
+  });
+  $("al-cancel").addEventListener("click", () => $("alert-wrap").classList.remove("open"));
+  $("al-save").addEventListener("click", () => {
+    const value = Number($("al-value").value);
+    if (!Number.isFinite(value)) return toast("Enter a price.");
+    account.alerts.push({ id: "a" + Date.now().toString(36), symbol: contractSym, field: "last", op: $("al-op").value, value, label: $("al-sheet-name").textContent });
+    save(); $("alert-wrap").classList.remove("open"); toast("Alert saved.");
+  });
+  $("ct-spread").addEventListener("click", () => {
+    closeContract();
+    setTab("tools");
+    $("sp-strategy").focus();
+    toast("Enter the strikes and premiums for this spread.");
+  });
+
+  // ---------- alerts ----------
+  function renderAlerts() {
+    const list = account?.alerts || [];
+    $("al-empty").style.display = list.length ? "none" : "block";
+    $("al-list").innerHTML = list.map((r, i) =>
+      `<div class="alert-row"><div><div class="sym" style="font-weight:600">${esc(r.label || r.symbol)}</div>
+        <div class="meta" style="font-size:12px;color:var(--muted);margin-top:2px">Notify when price ${r.op === ">=" ? "rises to or above" : "falls to or below"} ${usd(r.value)}</div></div>
+        <button class="ghost" data-del="${i}" aria-label="Delete alert">✕</button></div>`).join("");
+    $("al-list").querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { account.alerts.splice(Number(b.dataset.del), 1); save(); renderAlerts(); }));
+  }
+  $("al-check").addEventListener("click", async () => {
+    if (!account.alerts.length) return toast("No alerts to check yet.");
+    try {
+      const rules = account.alerts.map(({ label, ...r }) => r);
+      const out = await post("/api/alerts/evaluate", { rules, already_fired: [] });
+      toast(out.fired.length ? `${out.fired.length} alert(s) triggered.` : "No alerts triggered right now.");
+    } catch (e) { toast(e.message); }
+  });
+
+  // ---------- tools ----------
+  function prefillTools() {
+    $("sz-acct").value = account.accountSize; $("sz-risk").value = account.riskPct;
+    if (!$("scr-filters").children.length) { screenerRow({ field: "volume", op: ">=", value: 1000000 }); screenerRow({ field: "change_pct", op: ">", value: 0 }); }
+  }
+  $("sz-go").addEventListener("click", async () => {
+    try {
+      const r = await post("/api/size", { mode: "shares", account: Number($("sz-acct").value), risk_pct: Number($("sz-risk").value), entry: Number($("sz-entry").value), stop: Number($("sz-stop").value) });
+      $("sz-out").innerHTML = [["Shares", r.shares], ["Risk budget", usd(r.risk_budget)], ["Risk at size", usd(r.risk_at_size)], ["Position value", usd(r.position_value)]]
+        .map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join("");
+    } catch (e) { toast(e.message); }
+  });
+  $("sp-go").addEventListener("click", async () => {
+    try {
+      const L = Number($("sp-long").value), S = Number($("sp-short").value);
+      const pos = await post("/api/strategy/vertical", {
+        strategy: $("sp-strategy").value, long_strike: L, short_strike: S,
+        long_premium: Number($("sp-lp").value), short_premium: Number($("sp-sp").value),
+        curve: { low: Math.min(L, S) * 0.85, high: Math.max(L, S) * 1.15, steps: 60 },
+      });
+      $("sp-out").innerHTML = [["Net " + pos.net_type, usd(Math.abs(pos.net_premium) * pos.multiplier)], ["Breakeven", num(pos.breakeven)], ["Max profit", usd(pos.max_profit)], ["Max loss", usd(pos.max_loss)]]
+        .map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join("");
+      drawCurve(pos.curve, pos.breakeven);
+    } catch (e) { toast(e.message); }
+  });
+  function drawCurve(points, be) {
+    const svg = $("sp-curve"); svg.style.display = "block";
+    const W = 600, H = 160, pad = 14;
+    const xs = points.map((p) => p.underlying), ys = points.map((p) => p.pnl);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(0, ...ys), y1 = Math.max(0, ...ys);
+    const X = (x) => pad + ((x - x0) / (x1 - x0 || 1)) * (W - 2 * pad);
+    const Y = (y) => H - pad - ((y - y0) / (y1 - y0 || 1)) * (H - 2 * pad);
+    const line = points.map((p) => `${X(p.underlying).toFixed(1)},${Y(p.pnl).toFixed(1)}`).join(" ");
+    svg.innerHTML = `<line x1="${pad}" x2="${W - pad}" y1="${Y(0)}" y2="${Y(0)}" stroke="#2a3340"/>
+      <line x1="${X(be)}" x2="${X(be)}" y1="${pad}" y2="${H - pad}" stroke="#5aa9ff" stroke-dasharray="4 4"/>
+      <polyline points="${line}" fill="none" stroke="#f5b942" stroke-width="2.5"/>`;
+  }
+  function screenerRow(f) {
+    const row = document.createElement("div");
+    row.className = "screen-filter";
+    row.innerHTML = `<select class="f-field">${["last","change","change_pct","volume","bid","ask","spread"].map((x) => `<option ${x === f.field ? "selected" : ""}>${x}</option>`).join("")}</select>
+      <select class="f-op">${[">", ">=", "<", "<=", "==", "!=", "between"].map((x) => `<option ${x === f.op ? "selected" : ""}>${x}</option>`).join("")}</select>
+      <input class="f-val" value="${esc(Array.isArray(f.value) ? f.value.join(",") : f.value)}" />
+      <button class="ghost f-del" aria-label="Remove">✕</button>`;
+    row.querySelector(".f-del").addEventListener("click", () => { row.remove(); $("scr-count").textContent = $("scr-filters").children.length + " rules"; });
+    $("scr-filters").appendChild(row);
+    $("scr-count").textContent = $("scr-filters").children.length + " rules";
+  }
+  $("scr-add").addEventListener("click", () => screenerRow({ field: "change_pct", op: ">=", value: 1 }));
+  $("scr-run").addEventListener("click", async () => {
+    const universe = $("scr-universe").value.split(",").map((s) => s.trim()).filter(Boolean);
+    const filters = [...$("scr-filters").children].map((row) => {
+      const op = row.querySelector(".f-op").value; const raw = row.querySelector(".f-val").value.trim();
+      return { field: row.querySelector(".f-field").value, op, value: op === "between" ? raw.split(",").map(Number) : Number(raw) };
+    });
+    try {
+      const out = await post("/api/screener", { universe, filters });
+      $("scr-results").innerHTML = out.results.length
+        ? `<div class="result-row" style="color:var(--muted);font-size:12px;text-transform:uppercase"><div>Symbol</div><div class="r">Last</div><div class="r">Change</div></div>` +
+          out.results.map((q) => `<div class="result-row"><div><strong>${esc(q.symbol)}</strong></div><div class="r">${usd(q.last)}</div><div class="r chg ${cls(q.change_pct)}">${pct(q.change_pct)}</div></div>`).join("")
+        : "";
+      $("scr-empty").style.display = out.results.length ? "none" : "block";
+      if (!out.results.length) $("scr-empty").textContent = "No symbols matched. Loosen a filter to see more.";
+    } catch (e) { toast(e.message); }
+  });
+
+  // ---------- account ----------
+  function renderAccount() {
+    $("acc-name").value = account.name; $("acc-size").value = account.accountSize; $("acc-risk").value = account.riskPct;
+    $("acc-sub").textContent = `Signed in as ${account.email}`;
+    renderAccountData();
+  }
+  function renderAccountData() {
+    const el = $("acc-data");
+    if (provider === "offline") { el.innerHTML = `<strong class="down">App server not reachable</strong><p class="hint" style="margin:6px 0 0;padding:0">Start the server to see live data.</p>`; return; }
+    if (provider === "mock") { el.innerHTML = `<strong>Simulated prices</strong><p class="hint" style="margin:6px 0 0;padding:0">The live feed is not connected on this server yet. Prices move randomly for testing.</p>`; return; }
+    el.innerHTML = `<strong class="up">Live market data</strong><p class="hint" style="margin:6px 0 0;padding:0">Real-time quotes and options are included with your membership.</p>`;
+  }
+  $("acc-save").addEventListener("click", () => {
+    account.name = $("acc-name").value.trim() || account.name;
+    account.accountSize = Number($("acc-size").value) || 10000;
+    account.riskPct = Number($("acc-risk").value) || 1;
+    save(); toast("Saved.");
+  });
+  $("acc-signout").addEventListener("click", () => {
+    if (es) es.close();
+    clearInterval(chainTimer); clearInterval(contractTimer);
+    localStorage.removeItem(KEY);
+    account = null; quotes.clear(); stack.length = 0;
+    $("tabbar").style.display = "none";
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+    $("screen-login").style.display = "flex";
+    $("login-email").value = ""; $("login-pass").value = "";
+  });
+
+  // ---------- boot ----------
+  if (account) enterApp(); else $("tabbar").style.display = "none";
+})();
+</script>
+</body>
+</html>
