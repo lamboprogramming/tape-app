@@ -129,7 +129,7 @@
   .sheet-close { position: absolute; right: 12px; top: 10px; }
 
   /* bottom nav */
-  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--tabbar); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + env(safe-area-inset-bottom)); z-index: 10; }
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--tabbar); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + env(safe-area-inset-bottom)); z-index: 10; }
   .tabbar button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 0; cursor: pointer; }
   .tabbar button .ico { font-size: 18px; line-height: 1; }
   .tabbar button.on { color: var(--text); }
@@ -162,7 +162,126 @@
   .mt { margin-top: 12px; }
   .spacer { height: 8px; }
   @media (min-width: 481px) { .tabbar, .sheet { max-width: 480px; } }
+  /* ---------- discover ---------- */
+  .dchips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 14px 2px; scrollbar-width: none; }
+  .dchips::-webkit-scrollbar { display: none; }
+  .dchip { flex: 0 0 auto; border: 0; background: none; color: var(--muted); font: inherit; font-size: 15px; font-weight: 600; padding: 8px 12px; border-radius: 999px; cursor: pointer; }
+  .dchip.on { background: var(--panel-2); color: var(--text); }
+  .dsec { padding: 18px 14px 0; }
+  .dsec h2 { font-size: 20px; margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
+  .dsec h2 .info { font-size: 13px; color: var(--muted); border: 1px solid var(--muted); border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
+  .dscroll { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .dscroll::-webkit-scrollbar { display: none; }
+  .dpill { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dpill .arr { font-size: 11px; }
+  .dpill.up { color: var(--up); } .dpill.down { color: var(--down-text); }
+  .up-t { color: var(--up); } .down-t { color: var(--down-text); }
+  .dpill .name { color: var(--text); }
+  .sector { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+  .sector .shead { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+  .sector .shead .chg { font-size: 15px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .tile { border-radius: 8px; padding: 12px 6px; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
+  .tile .t { font-weight: 800; font-size: 14px; }
+  .tile .c { font-size: 14px; margin-top: 4px; }
+  .dempty { padding: 40px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+  .dnote { padding: 0 14px; font-size: 12px; color: var(--muted); }
+  /* ---------- overview hero ---------- */
+  .bp { padding: 6px 14px 0; }
+  .bp .lbl { font-size: 13px; color: var(--muted); }
+  .bp .amt { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; letter-spacing: -.5px; }
+  .bp .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .cashrow { display: flex; justify-content: space-between; padding: 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .cashrow .v { font-variant-numeric: tabular-nums; }
+  /* ---------- watchlist + explore rows ---------- */
+  .wrow { display: flex; align-items: center; gap: 10px; padding: 14px 2px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .wrow .wl { flex: 1; min-width: 0; }
+  .wsym { font-weight: 700; font-size: 17px; }
+  .wname { font-size: 13px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wr { text-align: right; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+  .wprice { font-weight: 600; font-size: 17px; }
+  .wchg { font-size: 14px; font-weight: 600; margin-top: 2px; }
+  .wchg.up { color: var(--up); } .wchg.down { color: var(--down-text); }
+  .wedit { display: flex; gap: 6px; }
+  .wedit button { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; font: inherit; font-size: 12px; cursor: pointer; }
+  .wedit button.ghost { color: var(--down-text); }
+  .wlist-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 2px 4px; }
+  .wlist-head h2 { font-size: 20px; margin: 0; }
+  .icards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .icard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .icard .n { font-size: 13px; color: var(--muted); }
+  .icard .v { font-size: 18px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .icard .c { font-size: 13px; font-weight: 600; margin-top: 2px; }
+  .story { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .story .src { font-size: 12px; color: var(--muted); }
+  .story .hl { font-size: 16px; font-weight: 600; margin-top: 4px; line-height: 1.35; }
+  .cal-row { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .cal-time { width: 84px; color: var(--muted); font-size: 13px; }
+  .cal-ev { flex: 1; font-size: 15px; }
+  .impact { color: var(--accent); letter-spacing: 2px; font-size: 11px; }
+  .dlist { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
+  .dlist .wrow:last-child { border-bottom: 0; }
+  .ex-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 14px 14px 0; }
+  .ex-tile { border: 0; background: var(--panel-2); color: var(--text); border-radius: 16px; padding: 18px 8px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .ex-tile .ico { font-size: 22px; line-height: 1; }
+  .ex-tile.on { outline: 2px solid var(--accent); }
+  .ex-cats { display: flex; gap: 8px; padding: 14px 14px 0; overflow-x: auto; scrollbar-width: none; }
+  .ex-cats::-webkit-scrollbar { display: none; }
+  .ex-cats .dchip { background: var(--panel-2); color: var(--text); padding: 10px 16px; font-size: 15px; }
+  .ex-cats .dchip.on { background: var(--accent); color: var(--on-accent); }
+  .wallets { display: grid; grid-auto-flow: column; grid-auto-columns: 46%; gap: 10px; overflow-x: auto; padding: 6px 14px 2px; scrollbar-width: none; }
+  .wallets::-webkit-scrollbar { display: none; }
+  .wcard { text-align: left; border: 1px solid var(--line); background: var(--panel); color: var(--text); border-radius: 16px; padding: 14px; font: inherit; cursor: pointer; }
+  .wcard.on { background: var(--panel-2); border-color: var(--text); }
+  .wcard .wn { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .wcard.on .wn { color: var(--text); }
+  .wcard .wv { font-size: 20px; font-weight: 700; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .wcard .wt { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .wcard.add { border-style: dashed; color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; }
+  .wl-btns { display: flex; gap: 6px; }
+  /* ---------- builder ---------- */
+  .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .calc { font-size: 17px; font-weight: 700; color: var(--accent); padding-top: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .mathbox { font-size: 14px; line-height: 1.75; color: var(--muted); margin-top: 12px; font-variant-numeric: tabular-nums; }
+  .mathbox b { color: var(--text); font-weight: 600; }
+  .mathbox .warn-t { color: var(--down-text); }
+  .tgt { display: grid; grid-template-columns: 1fr 1.2fr 1.2fr; gap: 6px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .tgt.head { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  .tgt .muted { color: var(--muted); }
+  #screen-tools details summary { font-size: 16px; font-weight: 700; cursor: pointer; }
+  #screen-tools details[open] summary { margin-bottom: 12px; }
+  .hint-box { font-size: 12px; color: var(--muted); padding: 10px 14px; line-height: 1.5; }
+  /* ---------- layout: phone first, desktop dashboard from 1024px ---------- */
+  .desk { display: block; }
+  .desk-l, .desk-r { min-width: 0; }
+  @media (min-width: 1024px) {
+    body { justify-content: stretch; }
+    #app { max-width: none; padding-left: 232px; }
+    .tabbar { position: fixed; top: 0; bottom: 0; left: 0; right: auto; width: 232px; max-width: none; margin: 0; display: flex !important; flex-direction: column; gap: 4px; background: var(--panel); border-top: 0; border-right: 1px solid var(--line); padding: 22px 12px; backdrop-filter: none; }
+    .tabbar[style*="none"] { display: none !important; }
+    .tabbar::before { content: "TAPE"; font-weight: 800; letter-spacing: .18em; color: var(--accent); padding: 4px 12px 22px; font-size: 15px; }
+    .tabbar button { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 11px 12px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+    .tabbar button:hover { background: var(--panel-2); }
+    .tabbar button.on { background: var(--panel-2); }
+    .tabbar button .ico { font-size: 17px; width: 20px; text-align: center; }
+    .screen { padding: 0 28px 48px; }
+    .screen .topbar { padding: 24px 0 14px; background: var(--bg); }
+    .screen .card { max-width: none; }
+    .sheet { left: 50%; right: auto; width: 560px; max-width: 560px; margin-left: -280px; }
+    .desk { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+    .desk .section-title:first-child { margin-top: 0; }
+    .ex-tiles { padding: 0; }
+    .ex-cats { padding: 0; }
+    .wallets { padding: 0 0 2px; grid-auto-columns: minmax(180px, 220px); }
+    .bp, .wlist-head, .addbar, .ex-cats { padding-left: 0; padding-right: 0; }
+    .wrow { padding-left: 0; padding-right: 0; }
+  }
+  .iv-wrap { position: relative; height: 360px; background: radial-gradient(ellipse at 50% 30%, var(--panel-2), var(--panel)); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .iv-wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  .iv-legend { position: absolute; left: 14px; bottom: 12px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .iv-legend i { display: inline-block; width: 120px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #3b8bff, #f5b942, #ff5a36); }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -183,17 +302,35 @@
   <!-- WATCHLIST (home) -->
   <section class="screen" id="screen-watchlist">
     <div class="topbar">
-      <div style="flex:1"><h1 id="wl-title">Watchlist</h1><span class="sub" id="wl-sub">Live quotes</span></div>
+      <div style="flex:1"><h1 id="wl-title">Overview</h1><span class="sub" id="wl-sub">Live quotes</span></div>
       <span class="pill" id="live-pill"><span class="status-dot" id="live-dot"></span><span id="live-text">connecting</span></span>
+    </div>
+    <div class="desk"><div class="desk-l">
+    <div class="wallets" id="wallets"></div>
+    <div class="bp">
+      <div class="lbl" id="bp-label">Paper buying power</div>
+      <div class="amt" id="bp-amt">$0.00</div>
+      <div class="note">Simulated funds for your strategies. Members don't trade real money here.</div>
+    </div>
+    <div class="ex-cats" id="wl-tabs"></div>
+    <div class="wlist-head">
+      <div><h2 id="wl-name">Watchlist</h2><span class="sub" id="wl-count">0 symbols</span></div>
+      <div class="wl-btns" id="wl-btns"></div>
     </div>
     <div class="addbar">
       <input id="wl-add-input" placeholder="Add a symbol, e.g. NVDA" maxlength="12" autocapitalize="characters" />
       <button class="btn primary" id="wl-add">Add</button>
     </div>
-    <div class="section-title"><span id="wl-count">0 symbols</span><span class="pill">tap to open</span></div>
-    <div class="card" id="wl-list"></div>
+    <div id="wl-list"></div>
     <div class="empty" id="wl-empty" style="display:none">Your watchlist is empty. Add a symbol above.</div>
     <p class="hint">Prices update live. Change % is measured against the previous close.</p>
+    </div><div class="desk-r">
+    <div class="section-title"><span>Implied volatility surface</span><span class="pill">SPY · sample</span></div>
+    <div class="iv-wrap" id="iv3d">
+      <div class="iv-legend" id="iv-legend"><span>Low IV</span><i></i><span>High IV</span></div>
+    </div>
+    <p class="hint">Drag to rotate. Height and colour show implied volatility across strikes and expiries. Sample data.</p>
+    </div></div>
   </section>
 
   <!-- SYMBOL (underlying + option chain) -->
@@ -234,6 +371,13 @@
   </section>
 
   <!-- ALERTS -->
+  <section class="screen" id="screen-discover">
+    <div class="topbar"><div style="flex:1"><h1>Explore</h1><span class="sub">News, events and markets</span></div></div>
+    <div class="addbar"><input placeholder="Search stocks, crypto, futures" maxlength="12" autocapitalize="characters" /></div>
+    <div id="d-body"></div>
+    <p class="dnote" style="padding:14px">Sample data for layout only. Nothing here is live yet.</p>
+  </section>
+
   <section class="screen" id="screen-alerts">
     <div class="topbar"><div style="flex:1"><h1>Alerts</h1><span class="sub">Get notified when a price crosses your level</span></div>
       <button class="btn" id="al-check">Check now</button></div>
@@ -243,20 +387,23 @@
 
   <!-- TOOLS: sizing, spreads, screener -->
   <section class="screen" id="screen-tools">
-    <div class="topbar"><div style="flex:1"><h1>Tools</h1><span class="sub">Size a trade, price a spread, or screen</span></div></div>
+    <div class="topbar"><div style="flex:1"><h1>Builder</h1><span class="sub">Size the trade, then check the spread</span></div></div>
 
+    <div class="desk"><div class="desk-l">
     <div class="section-title"><span>Position size</span></div>
     <div class="card" style="padding:14px">
-      <div class="field-row">
+      <div class="field-row3">
         <div><span class="label">Account ($)</span><input id="sz-acct" type="number" /></div>
-        <div><span class="label">Risk per trade (%)</span><input id="sz-risk" type="number" step="0.1" /></div>
+        <div><span class="label">Risk (%)</span><input id="sz-risk" type="number" step="0.1" /></div>
+        <div><span class="label">Risk ($)</span><div class="calc" id="sz-riskd">$0</div></div>
       </div>
       <div class="field-row">
         <div><span class="label">Entry</span><input id="sz-entry" type="number" step="0.01" value="50" /></div>
         <div><span class="label">Stop</span><input id="sz-stop" type="number" step="0.01" value="48" /></div>
       </div>
-      <button class="btn primary block mt" id="sz-go">Size shares</button>
       <div class="metric-grid" id="sz-out"></div>
+      <div class="mathbox" id="sz-math"></div>
+      <div class="mathbox" id="sz-targets"></div>
     </div>
 
     <div class="section-title"><span>Vertical spread</span></div>
@@ -276,23 +423,24 @@
         <div><span class="label">Long premium</span><input id="sp-lp" type="number" step="0.01" value="4.00" /></div>
         <div><span class="label">Short premium</span><input id="sp-sp" type="number" step="0.01" value="1.50" /></div>
       </div>
-      <button class="btn primary block mt" id="sp-go">Build spread</button>
-      <svg class="curve mt" id="sp-curve" viewBox="0 0 600 160" preserveAspectRatio="none" style="display:none"></svg>
       <div class="metric-grid" id="sp-out"></div>
+      <div class="mathbox" id="sp-math"></div>
+      <div class="mathbox" id="sp-targets"></div>
     </div>
 
-    <div class="section-title"><span>Scenarios by portfolio size</span></div>
-    <div class="card" style="padding:14px">
+    </div><div class="desk-r">
+    <details class="card" style="margin-top:12px;padding:14px">
+      <summary>Other strategies</summary>
+
+      <div class="section-title" style="padding-left:0"><span>Scenarios by portfolio size</span></div>
       <div class="field-row">
         <div><span class="label">Premium per share ($)</span><input id="scn-premium" type="number" step="0.01" value="1.00" /></div>
         <div><span class="label">Risk per trade (%)</span><input id="scn-risk" type="number" step="0.1" value="10" /></div>
       </div>
       <button class="btn primary block mt" id="scn-go">Show scenarios</button>
       <div class="card mt" id="scn-out" style="margin:0;display:none"></div>
-    </div>
 
-    <div class="section-title"><span>Iron condor</span></div>
-    <div class="card" style="padding:14px">
+      <div class="section-title" style="padding-left:0"><span>Iron condor</span></div>
       <div class="field-row">
         <div><span class="label">Put long strike</span><input id="ic-pl" type="number" value="90" /></div>
         <div><span class="label">Put short strike</span><input id="ic-ps" type="number" value="95" /></div>
@@ -311,10 +459,8 @@
       </div>
       <button class="btn primary block mt" id="ic-go">Build iron condor</button>
       <div class="metric-grid" id="ic-out"></div>
-    </div>
 
-    <div class="section-title"><span>Single-leg risk</span></div>
-    <div class="card" style="padding:14px">
+      <div class="section-title" style="padding-left:0"><span>Single-leg risk</span></div>
       <div class="field-row">
         <div><span class="label">Type</span><select id="nk-kind"><option value="call">Call</option><option value="put">Put</option></select></div>
         <div><span class="label">Side</span><select id="nk-side"><option value="long">Buy</option><option value="short">Sell</option></select></div>
@@ -326,26 +472,52 @@
       <button class="btn primary block mt" id="nk-go">Check risk</button>
       <div class="metric-grid" id="nk-out"></div>
       <div id="nk-warn"></div>
-    </div>
-
-    <div class="section-title"><span>Screener</span><span class="pill" id="scr-count">0 rules</span></div>
-    <div class="card" style="padding:14px">
-      <span class="label">Universe (comma separated)</span>
-      <input id="scr-universe" value="AAPL, MSFT, NVDA, TSLA, AMZN, SPY, QQQ, AMD, META, GOOGL" />
-      <div class="mt" id="scr-filters"></div>
-      <div class="field-row mt">
-        <button class="btn block" id="scr-add">+ Filter</button>
-        <button class="btn primary block" id="scr-run">Run</button>
-      </div>
-    </div>
-    <div class="card" style="margin-top:10px" id="scr-results"></div>
-    <div class="empty" id="scr-empty" style="display:none">Run a screen to see matches.</div>
+    </details>
+    </div></div>
     <div class="spacer"></div>
   </section>
 
   <!-- ACCOUNT -->
   <section class="screen" id="screen-account">
-    <div class="topbar"><div style="flex:1"><h1>Account</h1><span class="sub" id="acc-sub">—</span></div></div>
+    <div class="topbar"><div style="flex:1"><h1>More</h1><span class="sub" id="acc-sub">—</span></div></div>
+
+    <div class="desk"><div class="desk-l">
+    <div class="section-title"><span>Screener</span><span class="pill" id="scr-count">0 rules</span></div>
+    <div class="card" style="padding:14px">
+      <span class="label">Universe (comma separated)</span>
+      <input id="scr-universe" value="AAPL, MSFT, NVDA, TSLA, AMZN, SPY, QQQ, AMD, META, GOOGL" />
+      <div class="field-row mt">
+        <div><span class="label">Sector</span><select id="f-sector"><option>Any</option><option>Technology</option><option>Financials</option><option>Healthcare</option><option>Energy</option><option>Consumer</option></select></div>
+        <div><span class="label">Market cap</span><select id="f-cap"><option>Any</option><option>Micro</option><option>Small</option><option>Mid</option><option>Large</option><option>Mega</option></select></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Short float min (%)</span><input id="f-short" type="number" placeholder="e.g. 15" /></div>
+        <div><span class="label">Unusual volume (× avg)</span><input id="f-relvol" type="number" step="0.1" placeholder="e.g. 2" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Price vs 20 EMA</span><select id="f-ema"><option>Any</option><option>Above</option><option>Below</option></select></div>
+        <div><span class="label">Price vs 50 SMA</span><select id="f-sma"><option>Any</option><option>Above</option><option>Below</option></select></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Gamma exposure</span><select id="f-gex"><option>Any</option><option>Positive</option><option>Negative</option></select></div>
+        <div><span class="label">IV rank min</span><input id="f-ivr" type="number" placeholder="e.g. 50" /></div>
+      </div>
+      <div class="field-row">
+        <div><span class="label">Option open interest min</span><input id="f-oi" type="number" placeholder="e.g. 1000" /></div>
+        <div><span class="label">Days to expiry</span><select id="f-dte"><option>Any</option><option>0–7</option><option>8–30</option><option>31–60</option></select></div>
+      </div>
+      <div class="section-title" style="padding-left:0"><span>Custom rules</span></div>
+      <div id="scr-filters"></div>
+      <div class="field-row mt">
+        <button class="btn block" id="scr-add">+ Rule</button>
+        <button class="btn primary block" id="scr-run">Run</button>
+      </div>
+    </div>
+    <div class="hint-box" id="scr-note"></div>
+    <div class="card" style="margin-top:10px" id="scr-results"></div>
+    <div class="empty" id="scr-empty" style="display:none">Run a screen to see matches.</div>
+
+    </div><div class="desk-r">
     <div class="section-title"><span>Profile</span></div>
     <div class="card" style="padding:14px">
       <span class="label">Display name</span>
@@ -372,6 +544,7 @@
     </div>
     <div class="section-title"><span>Session</span></div>
     <div class="card"><div class="row" id="acc-signout"><div class="main"><div class="sym">Sign out</div><div class="meta">Ends this device's session</div></div></div></div>
+      </div></div>
   </section>
 
   <!-- CONTRACT SHEET -->
@@ -428,10 +601,11 @@
   </div>
 
   <nav class="tabbar" id="tabbar">
-    <button data-tab="watchlist" class="on"><span class="ico">≡</span>Watchlist</button>
+    <button data-tab="watchlist" class="on"><span class="ico">≡</span>Overview</button>
+    <button data-tab="discover"><span class="ico">◎</span>Explore</button>
     <button data-tab="alerts"><span class="ico">◔</span>Alerts</button>
-    <button data-tab="tools"><span class="ico">⚙</span>Tools</button>
-    <button data-tab="account"><span class="ico">◉</span>Account</button>
+    <button data-tab="tools"><span class="ico">⚙</span>Builder</button>
+    <button data-tab="account"><span class="ico">⋯</span>More</button>
   </nav>
 
   <div class="toast" id="toast"></div>
@@ -464,10 +638,152 @@
 
   // ---------- local profile (stand-in for server accounts) ----------
   const KEY = "tape.account";
-  const blank = (email) => ({ email, name: email.split("@")[0] || "Member", accountSize: 10000, riskPct: 1, watchlist: ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"], alerts: [], screen: [] });
+  const blank = (email) => ({ email, name: email.split("@")[0] || "Member", accountSize: 10000, riskPct: 1, lists: [{ id: "l1", name: "Watchlist", symbols: ["SPY", "QQQ", "AAPL", "NVDA", "TSLA"] }], activeList: "l1", wallets: [{ id: "w1", name: "Investing", buyingPower: 1000 }], activeWallet: "w1", alerts: [], screen: [] });
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
   let account = load();
+  function migrateAccount() {
+    if (!account.lists) { account.lists = [{ id: "l1", name: "Watchlist", symbols: account.watchlist || [] }]; account.activeList = "l1"; delete account.watchlist; }
+    if (!account.wallets) { account.wallets = [{ id: "w1", name: "Investing", buyingPower: 1000 }]; account.activeWallet = "w1"; }
+  }
+  const curList = () => (account.lists.find((l) => l.id === account.activeList) || account.lists[0]).symbols;
+  const curListObj = () => account.lists.find((l) => l.id === account.activeList) || account.lists[0];
+  if (account) migrateAccount();
   const save = () => localStorage.setItem(KEY, JSON.stringify(account));
+
+  // ---------- explore (sample data for layout) ----------
+  const D_CATS = ["Stocks", "Crypto", "Futures"];
+  let dCat = "Stocks";
+  const D_STORIES = [
+    ["Sample: Gold holds above a key level as traders weigh the rate outlook", "Sample source · 2h ago"],
+    ["Sample: Tech futures slip after a sharp open as AI names pull back", "Sample source · 3h ago"],
+    ["Sample: Oil steadies after an inventory report comes in below forecast", "Sample source · 5h ago"],
+  ];
+  const D_CAL = [["8:30 AM", "Jobless claims", 2], ["10:00 AM", "Consumer sentiment", 1], ["2:00 PM", "Fed speaker", 3], ["Tomorrow", "CPI release", 3]];
+  const D_INDEX = [["S&P 500", 7688.62, 1.58], ["Dow 30", 53356.12, 3.03], ["Nasdaq 100", 28437.17, 0.91], ["Russell 2000", 2862.49, -0.06]];
+  const D_MOVERS = [["FIS", -24.42], ["INIO", -19.83], ["XYZ", 15.70], ["PCOR", 19.97], ["MDLN", 16.31], ["VST", -14.60]];
+  const D_IV = [["SMMT", 1.84], ["CRWV", -9.96], ["NBIS", -6.82], ["KYMR", 4.11], ["CBRS", -6.18], ["SITM", -9.19]];
+  const D_TECH = { name: "Technology", change: 1.63, tiles: [
+    ["AAPL", 6.24], ["NVDA", -1.39], ["MSFT", 6.61], ["GOOGL", 3.90], ["GOOG", 3.96],
+    ["GOOGM", 3.09], ["GOOGN", 2.99], ["AMZN", 7.11], ["TSM", -2.17] ] };
+  const D_CRYPTO = [["BTC", 64210.0, 2.14], ["ETH", 3180.55, -0.82], ["SOL", 152.31, 4.02], ["DOGE", 0.1421, -1.10]];
+  const D_FUT = [["ES", 7690.25, 1.60], ["NQ", 28440.5, 0.95], ["CL", 71.82, -0.44], ["GC", 4012.3, 0.58]];
+
+  const sgn = (n) => (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+  const fmtP = (n) => (n >= 1000 ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : n.toFixed(n < 1 ? 4 : 2));
+  const heat = (n) => {
+    const pct = Math.min(60, Math.round(Math.abs(n) * 12) + 12);
+    const col = n >= 0 ? "var(--up)" : "var(--down)";
+    return `background: color-mix(in srgb, ${col} ${pct}%, var(--panel))`;
+  };
+  const instRow = ([sym, price, chg]) => `<div class="wrow"><div class="wl"><div class="wsym">${sym}</div></div><div class="wr"><div class="wprice">${fmtP(price)}</div><div class="wchg ${chg >= 0 ? "up" : "down"}">${sgn(chg)}</div></div></div>`;
+  const idxCard = ([name, price, chg]) => `<div class="icard"><div class="n">${name}</div><div class="v">${fmtP(price)}</div><div class="c ${chg >= 0 ? "up-t" : "down-t"}">${sgn(chg)} today</div></div>`;
+  const pills = (rows) => rows.map(([sym, n]) => {
+    const cls = n >= 0 ? "up" : "down";
+    return `<div class="dpill ${cls}"><span class="name">${sym}</span><span class="arr">${n >= 0 ? "▲" : "▼"}</span><span>${Math.abs(n).toFixed(2)}%</span></div>`;
+  }).join("");
+
+  function categoryHtml() {
+    if (dCat === "Crypto") return `<div class="dsec"><h2>Crypto</h2><div class="dlist">${D_CRYPTO.map(instRow).join("")}</div></div>`;
+    if (dCat === "Futures") return `<div class="dsec"><h2>Futures</h2><div class="dlist">${D_FUT.map(instRow).join("")}</div></div>`;
+    return `
+      <div class="dsec"><h2>Indexes</h2><div class="icards">${D_INDEX.map(idxCard).join("")}</div></div>
+      <div class="dsec"><h2>Top movers</h2><div class="dscroll">${pills(D_MOVERS)}</div></div>
+      <div class="dsec"><h2>Highest implied volatility</h2><div class="dscroll">${pills(D_IV)}</div></div>
+      <div class="dsec"><h2>Sectors</h2>
+        <div class="sector">
+          <div class="shead"><span>${D_TECH.name} ›</span><span class="chg ${D_TECH.change >= 0 ? "up-t" : "down-t"}">${D_TECH.change >= 0 ? "▲" : "▼"} ${Math.abs(D_TECH.change).toFixed(2)}%</span></div>
+          <div class="tiles">${D_TECH.tiles.map(([sym, n]) => `<div class="tile" style="${heat(n)}"><div class="t">${sym}</div><div class="c">${sgn(n)}</div></div>`).join("")}</div>
+        </div>
+      </div>`;
+  }
+
+  let exView = null;
+  function renderDiscover() {
+    const tile = (key, icon, label) => `<button class="ex-tile ${exView === key ? "on" : ""}" data-ex="${key}"><span class="ico">${icon}</span>${label}</button>`;
+    let panel = "";
+    if (exView === "news") panel = `<div class="dsec"><h2>Top stories</h2>${D_STORIES.map(([h, src]) => `<div class="story"><div class="src">${src}</div><div class="hl">${h}</div></div>`).join("")}</div>`;
+    if (exView === "cal") panel = `<div class="dsec"><h2>Economic calendar</h2>${D_CAL.map(([t, ev, imp]) => `<div class="cal-row"><div class="cal-time">${t}</div><div class="cal-ev">${ev}</div><div class="impact">${"●".repeat(imp)}${"○".repeat(3 - imp)}</div></div>`).join("")}</div>`;
+    $("d-body").innerHTML = `
+      <div class="desk"><div class="desk-l">
+      <div class="ex-tiles">${tile("news", "▤", "News")}${tile("cal", "▦", "Calendar")}${tile("screen", "⚲", "Screener")}</div>
+      ${panel}
+      </div><div class="desk-r">
+      <div class="ex-cats">${D_CATS.map((t) => `<button class="dchip ${t === dCat && !exView ? "on" : ""}" data-dcat="${t}">${t}</button>`).join("")}</div>
+      <div id="d-cat"></div></div></div>`;
+    document.querySelectorAll("[data-ex]").forEach((b) => b.addEventListener("click", () => {
+      if (b.dataset.ex === "screen") { stack.length = 0; setTab("account"); return; }
+      exView = exView === b.dataset.ex ? null : b.dataset.ex;
+      renderDiscover();
+    }));
+    document.querySelectorAll("[data-dcat]").forEach((b) => b.addEventListener("click", () => {
+      dCat = b.dataset.dcat; exView = null; renderDiscover();
+    }));
+    $("d-cat").innerHTML = categoryHtml();
+  }
+
+  // ---------- implied volatility surface (Three.js, sample data) ----------
+  let ivState = null;
+  function initIV() {
+    const host = $("iv3d");
+    if (!host || !window.THREE) return;
+    if (ivState) { ivState.resize(); return; }
+    const T = window.THREE;
+    const scene = new T.Scene();
+    const camera = new T.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 3.4, 5.4);
+    camera.lookAt(0, 0.6, 0);
+    const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    host.insertBefore(renderer.domElement, host.firstChild);
+
+    // strikes across x, expiries across z, implied volatility as height and colour
+    const geo = new T.PlaneGeometry(4.4, 3.0, 44, 26);
+    geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position;
+    const colors = new Float32Array(pos.count * 3);
+    const c = new T.Color();
+    for (let i = 0; i < pos.count; i++) {
+      const k = (pos.getX(i) + 2.2) / 4.4;          // 0..1 across strikes
+      const t = (pos.getZ(i) + 1.5) / 3.0;          // 0..1 across expiries
+      const smile = 0.16 + 0.5 * Math.pow(k - 0.5, 2) + 0.10 * (1 - t) + 0.03 * Math.sin(k * 7 + t * 3);
+      pos.setY(i, smile * 2.4);
+      const hue = Math.max(0.0, Math.min(0.62, 0.62 - (smile - 0.16) * 1.4));
+      c.setHSL(hue, 0.85, 0.55);
+      colors.set([c.r, c.g, c.b], i * 3);
+    }
+    geo.setAttribute("color", new T.BufferAttribute(colors, 3));
+    geo.computeVertexNormals();
+    const mesh = new T.Mesh(geo, new T.MeshBasicMaterial({ vertexColors: true, side: T.DoubleSide, transparent: true, opacity: 0.92 }));
+    const wire = new T.LineSegments(new T.WireframeGeometry(geo), new T.LineBasicMaterial({ color: 0x3a4658, transparent: true, opacity: 0.45 }));
+    const group = new T.Group();
+    group.add(mesh, wire);
+    group.rotation.set(-0.35, 0.6, 0);
+    scene.add(group);
+
+    let dragging = false, lastX = 0;
+    const el = renderer.domElement;
+    el.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; el.setPointerCapture(e.pointerId); });
+    el.addEventListener("pointerup", () => { dragging = false; });
+    el.addEventListener("pointermove", (e) => { if (dragging) { group.rotation.y += (e.clientX - lastX) * 0.01; lastX = e.clientX; } });
+
+    const resize = () => {
+      const w = host.clientWidth, h = host.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    new ResizeObserver(resize).observe(host);
+    resize();
+
+    const frame = () => {
+      if (host.offsetParent !== null && !dragging) group.rotation.y += 0.0015;
+      if (host.offsetParent !== null) renderer.render(scene, camera);
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+    ivState = { resize };
+  }
 
   // ---------- navigation ----------
   const stack = [];
@@ -477,10 +793,11 @@
   function setTab(tab) {
     document.querySelectorAll("#tabbar button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
     showScreen(tab);
+    if (tab === "discover") renderDiscover();
     if (tab === "alerts") renderAlerts();
     if (tab === "account") renderAccount();
     if (tab === "tools") prefillTools();
-    if (tab === "watchlist") { renderWatchlist(); openTape(); }
+    if (tab === "watchlist") { renderWatchlist(); openTape(); initIV(); }
   }
   document.querySelectorAll("#tabbar button").forEach((b) => b.addEventListener("click", () => { stack.length = 0; setTab(b.dataset.tab); }));
   document.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", () => { stack.pop(); setTab("watchlist"); }));
@@ -519,7 +836,7 @@
   function openTape() {
     if (!account) return;
     if (es) es.close();
-    const symbols = account.watchlist;
+    const symbols = curList();
     if (!symbols.length) { setLive("idle", null); quotes.clear(); renderWatchlist(); return; }
     setLive("connecting", null);
     es = new EventSource(`${API}/api/tape?symbols=${encodeURIComponent(symbols.join(","))}&interval=2`);
@@ -548,22 +865,83 @@
     row.classList.remove("flash-up", "flash-down"); void row.offsetWidth;
     row.classList.add(now > before ? "flash-up" : "flash-down");
   }
+  let wlEdit = false;
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t.closest("#wl-edit")) { wlEdit = !wlEdit; renderWatchlist(); return; }
+    const tabBtn = t.closest("[data-wl]");
+    if (tabBtn) { account.activeList = tabBtn.dataset.wl; wlEdit = false; save(); renderWatchlist(); openTape(); return; }
+    if (t.closest("#wl-new")) {
+      const name = (prompt("Name the new list, e.g. Iron condors") || "").trim();
+      if (!name) return;
+      const id = "l" + Date.now();
+      account.lists.push({ id, name: name.slice(0, 30), symbols: [] });
+      account.activeList = id; wlEdit = false; save(); renderWatchlist(); openTape();
+      return;
+    }
+    if (t.closest("#wl-rename")) {
+      const cur = curListObj();
+      const name = (prompt("Rename list", cur.name) || "").trim();
+      if (!name) return;
+      cur.name = name.slice(0, 30); save(); renderWatchlist();
+      return;
+    }
+    if (t.closest("#wl-delete")) {
+      if (account.lists.length === 1) return toast("Keep at least one list.");
+      const cur = curListObj();
+      if (!confirm(`Delete "${cur.name}"? Its symbols will be removed.`)) return;
+      account.lists = account.lists.filter((l) => l !== cur);
+      account.activeList = account.lists[0].id; wlEdit = false;
+      save(); renderWatchlist(); openTape(); toast(`Deleted ${cur.name}.`);
+      return;
+    }
+    const wc = t.closest("[data-wallet]");
+    if (wc) { account.activeWallet = wc.dataset.wallet; save(); renderWallets(); return; }
+    if (t.closest("#wallet-new")) {
+      const name = (prompt("Name the new buying power wallet, e.g. Roth IRA") || "").trim();
+      if (!name) return;
+      const bp = parseFloat(prompt("Starting buying power in dollars", "1000"));
+      if (!Number.isFinite(bp) || bp < 0) return toast("Enter a valid amount.");
+      const id = "w" + Date.now();
+      account.wallets.push({ id, name: name.slice(0, 30), buyingPower: bp });
+      account.activeWallet = id; save(); renderWallets();
+    }
+  });
+  function renderWallets() {
+    const w = account.wallets.find((x) => x.id === account.activeWallet) || account.wallets[0];
+    $("wallets").innerHTML = account.wallets.map((x) => `<button class="wcard ${x.id === w.id ? "on" : ""}" data-wallet="${x.id}"><div class="wn">${esc(x.name)}</div><div class="wv">${usd(x.buyingPower)}</div><div class="wt">Paper</div></button>`).join("")
+      + `<button class="wcard add" id="wallet-new">+ Add wallet</button>`;
+    $("bp-label").textContent = `${w.name} buying power`;
+    $("bp-amt").textContent = usd(w.buyingPower);
+  }
+  function renderListChrome() {
+    const cur = curListObj();
+    $("wl-tabs").innerHTML = account.lists.map((l) => `<button class="dchip ${l.id === cur.id ? "on" : ""}" data-wl="${l.id}">${esc(l.name)}</button>`).join("")
+      + `<button class="dchip" id="wl-new">+ New list</button>`;
+    $("wl-name").textContent = cur.name;
+    $("wl-btns").innerHTML = `<button class="chip" id="wl-edit">${wlEdit ? "Done" : "Edit"}</button>`
+      + (wlEdit ? `<button class="chip" id="wl-rename">Rename</button><button class="chip" id="wl-delete">Delete</button>` : "");
+  }
   function renderWatchlist() {
     const list = $("wl-list");
-    const symbols = account?.watchlist || [];
+    const symbols = curList();
+    renderListChrome();
+    renderWallets();
     $("wl-count").textContent = `${symbols.length} symbol${symbols.length === 1 ? "" : "s"}`;
     $("wl-empty").style.display = symbols.length ? "none" : "block";
     list.innerHTML = symbols.map((s, i) => {
       const q = quotes.get(s);
       const up = q ? q.change_pct : null;
-      return `<div class="row" data-sym="${esc(s)}" data-open="${esc(s)}">
-        <div class="main"><div class="sym">${esc(s)}</div><div class="meta">Prev ${q ? usd(q.prev_close) : "—"} · H ${q ? usd(q.high) : "—"} · L ${q ? usd(q.low) : "—"} ${flagPills(q)}</div></div>
-        <div class="price"><strong>${q ? usd(q.last) : "—"}</strong><span class="chg ${cls(up)}">${q ? pct(up) : "—"}</span></div>
-        <div class="reorder">
+      const tone = up !== null && up < 0 ? "down" : "up";
+      const controls = wlEdit ? `<div class="wedit">
           <button data-up="${i}" aria-label="Move up">▲</button>
           <button data-down="${i}" aria-label="Move down">▼</button>
-        </div>
-        <button class="ghost" data-remove="${i}" aria-label="Remove">✕</button>
+          <button class="ghost" data-remove="${i}" aria-label="Remove">✕</button>
+        </div>` : "";
+      return `<div class="wrow" data-sym="${esc(s)}" data-open="${esc(s)}">
+        <div class="wl"><div class="wsym">${esc(s)}</div><div class="wname">Prev ${q ? usd(q.prev_close) : "—"} · H ${q ? usd(q.high) : "—"} · L ${q ? usd(q.low) : "—"}</div></div>
+        <div class="wr"><div class="wprice">${q ? usd(q.last) : "—"}</div><div class="wchg ${tone}">${q ? pct(up) : "—"}</div></div>
+        ${controls}
       </div>`;
     }).join("");
     list.querySelectorAll("[data-open]").forEach((r) => r.addEventListener("click", (e) => {
@@ -572,25 +950,25 @@
     }));
     list.querySelectorAll("[data-remove]").forEach((b) => b.addEventListener("click", (e) => {
       e.stopPropagation();
-      const sym = account.watchlist.splice(Number(b.dataset.remove), 1)[0];
+      const sym = curList().splice(Number(b.dataset.remove), 1)[0];
       quotes.delete(sym); save(); openTape(); renderWatchlist(); toast(`Removed ${sym}.`);
     }));
     list.querySelectorAll("[data-up]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); move(Number(b.dataset.up), -1); }));
     list.querySelectorAll("[data-down]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); move(Number(b.dataset.down), 1); }));
   }
   function move(i, dir) {
-    const j = i + dir; const w = account.watchlist;
+    const j = i + dir; const w = curList();
     if (j < 0 || j >= w.length) return;
     [w[i], w[j]] = [w[j], w[i]]; save(); renderWatchlist();
   }
   async function addSymbol() {
     const sym = $("wl-add-input").value.trim().toUpperCase();
     if (!/^[A-Z.\-]{1,12}$/.test(sym)) return toast("Enter a symbol like AAPL.");
-    if (account.watchlist.includes(sym)) return toast(`${sym} is already on your watchlist.`);
+    if (curList().includes(sym)) return toast(`${sym} is already on your watchlist.`);
     try {
       await api(`/api/quotes?symbols=${encodeURIComponent(sym)}`);
     } catch (e) { return toast(e.message); }
-    account.watchlist.push(sym); save(); $("wl-add-input").value = "";
+    curList().push(sym); save(); $("wl-add-input").value = "";
     openTape(); renderWatchlist(); toast(`Added ${sym}.`);
   }
   $("wl-add").addEventListener("click", addSymbol);
@@ -808,41 +1186,98 @@
   });
 
   // ---------- tools ----------
+  const metric = ([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`;
+  function sizeCalc() {
+    const acct = Number($("sz-acct").value) || 0, riskPct = Number($("sz-risk").value) || 0;
+    const budget = acct * riskPct / 100;
+    $("sz-riskd").textContent = usd(budget);
+    const entry = Number($("sz-entry").value), stop = Number($("sz-stop").value);
+    const per = entry - stop;
+    if (!(entry > 0) || !(stop > 0) || per <= 0) {
+      $("sz-out").innerHTML = "";
+      $("sz-math").innerHTML = `<span class="warn-t">For a long trade, the stop must be below the entry.</span>`;
+      $("sz-targets").innerHTML = "";
+      return;
+    }
+    const shares = Math.floor(budget / per);
+    $("sz-out").innerHTML = [["Shares", shares], ["Position value", usd(shares * entry)], ["Stop distance", (per / entry * 100).toFixed(2) + "%"], ["Risk at size", usd(shares * per)]].map(metric).join("");
+    $("sz-math").innerHTML = `
+      <div>Risk budget = ${usd(acct)} × ${riskPct}% = <b>${usd(budget)}</b></div>
+      <div>Risk per share = entry − stop = $${entry.toFixed(2)} − $${stop.toFixed(2)} = <b>$${per.toFixed(2)}</b></div>
+      <div>Shares = budget ÷ risk per share = <b>${shares}</b></div>`;
+    $("sz-targets").innerHTML = `<div class="tgt head"><div>Reward</div><div>Target price</div><div>Profit</div></div>` +
+      [1, 2, 3].map((R) => `<div class="tgt"><div>1 : ${R}</div><div>$${(entry + R * per).toFixed(2)}</div><div class="up-t">${usd(shares * R * per)}</div></div>`).join("");
+  }
+  function spreadCalc() {
+    const type = $("sp-strategy").value;
+    const L = Number($("sp-long").value), S = Number($("sp-short").value);
+    const lp = Number($("sp-lp").value), spr = Number($("sp-sp").value);
+    const isDebit = type === "bull_call" || type === "bear_put";
+    const width = Math.abs(S - L);
+    const rules = {
+      bull_call: [L < S, "long strike below short strike"],
+      bear_put: [L > S, "long strike above short strike"],
+      bull_put: [S > L, "short strike above long strike"],
+      bear_call: [L > S, "long strike above short strike"],
+    }[type];
+    if (!rules[0]) { $("sp-out").innerHTML = ""; $("sp-targets").innerHTML = ""; $("sp-math").innerHTML = `<span class="warn-t">This structure needs ${rules[1]}.</span>`; return; }
+    const net = isDebit ? lp - spr : spr - lp;
+    if (!(net > 0 && net < width)) {
+      $("sp-out").innerHTML = ""; $("sp-targets").innerHTML = "";
+      $("sp-math").innerHTML = `<span class="warn-t">${isDebit ? "Debit" : "Credit"} must be more than $0 and less than the width of $${width.toFixed(2)}.</span>`;
+      return;
+    }
+    const maxProfit = (isDebit ? width - net : net) * 100;
+    const maxLoss = (isDebit ? net : width - net) * 100;
+    const be = { bull_call: L + net, bear_put: L - net, bull_put: S - net, bear_call: S + net }[type];
+    const rr = maxProfit / maxLoss;
+    const budget = (Number($("sz-acct").value) || 0) * (Number($("sz-risk").value) || 0) / 100;
+    const contracts = Math.floor(budget / maxLoss);
+    $("sp-out").innerHTML = [
+      [isDebit ? "Net debit" : "Net credit", usd(net * 100)], ["Width", usd(width * 100)],
+      ["Max profit", usd(maxProfit)], ["Max loss", usd(maxLoss)],
+      ["Breakeven", be.toFixed(2)], ["Reward : risk", "1 : " + rr.toFixed(2)],
+    ].map(metric).join("");
+    $("sp-math").innerHTML = `
+      <div>Max loss = ${isDebit ? `debit $${net.toFixed(2)}` : `(width $${width.toFixed(2)} − credit $${net.toFixed(2)})`} × 100 = <b>${usd(maxLoss)}</b></div>
+      <div>Max profit = ${isDebit ? `(width − debit) × 100` : `credit × 100`} = <b>${usd(maxProfit)}</b></div>
+      <div>Contracts for your risk budget (${usd(budget)}) = <b>${contracts}</b>${contracts ? "" : " — budget is too small for one contract"}</div>`;
+    $("sp-targets").innerHTML = `<div class="tgt head"><div>Reward</div><div>Profit per contract</div><div>At ${contracts} contract${contracts === 1 ? "" : "s"}</div></div>` +
+      [1, 2, 3].map((R) => {
+        const reachable = rr >= R;
+        return `<div class="tgt"><div>1 : ${R}</div><div>${usd(R * maxLoss)}</div><div class="${reachable ? "up-t" : "muted"}">${reachable ? usd(contracts * R * maxLoss) : "above max profit"}</div></div>`;
+      }).join("");
+  }
+  function recalcBuilder() { sizeCalc(); spreadCalc(); }
   function prefillTools() {
     $("sz-acct").value = account.accountSize; $("sz-risk").value = account.riskPct;
+    recalcBuilder();
+  }
+  ["sz-acct", "sz-risk"].forEach((id) => $(id).addEventListener("input", () => {
+    account.accountSize = Number($("sz-acct").value) || 0;
+    account.riskPct = Number($("sz-risk").value) || 0;
+    save(); recalcBuilder();
+  }));
+  document.querySelectorAll("#screen-tools input, #screen-tools select").forEach((el) => {
+    el.addEventListener("input", recalcBuilder);
+    el.addEventListener("change", recalcBuilder);
+  });
+  function seedScreener() {
     if (!$("scr-filters").children.length) { screenerRow({ field: "volume", op: ">=", value: 1000000 }); screenerRow({ field: "change_pct", op: ">", value: 0 }); }
   }
-  $("sz-go").addEventListener("click", async () => {
-    try {
-      const r = await post("/api/size", { mode: "shares", account: Number($("sz-acct").value), risk_pct: Number($("sz-risk").value), entry: Number($("sz-entry").value), stop: Number($("sz-stop").value) });
-      $("sz-out").innerHTML = [["Shares", r.shares], ["Risk budget", usd(r.risk_budget)], ["Risk at size", usd(r.risk_at_size)], ["Position value", usd(r.position_value)]]
-        .map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join("");
-    } catch (e) { toast(e.message); }
-  });
-  $("sp-go").addEventListener("click", async () => {
-    try {
-      const L = Number($("sp-long").value), S = Number($("sp-short").value);
-      const pos = await post("/api/strategy/vertical", {
-        strategy: $("sp-strategy").value, long_strike: L, short_strike: S,
-        long_premium: Number($("sp-lp").value), short_premium: Number($("sp-sp").value),
-        curve: { low: Math.min(L, S) * 0.85, high: Math.max(L, S) * 1.15, steps: 60 },
-      });
-      $("sp-out").innerHTML = [["Net " + pos.net_type, usd(Math.abs(pos.net_premium) * pos.multiplier)], ["Breakeven", num(pos.breakeven)], ["Max profit", usd(pos.max_profit)], ["Max loss", usd(pos.max_loss)]]
-        .map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join("");
-      drawCurve(pos.curve, pos.breakeven);
-    } catch (e) { toast(e.message); }
-  });
-  function drawCurve(points, be) {
-    const svg = $("sp-curve"); svg.style.display = "block";
-    const W = 600, H = 160, pad = 14;
-    const xs = points.map((p) => p.underlying), ys = points.map((p) => p.pnl);
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(0, ...ys), y1 = Math.max(0, ...ys);
-    const X = (x) => pad + ((x - x0) / (x1 - x0 || 1)) * (W - 2 * pad);
-    const Y = (y) => H - pad - ((y - y0) / (y1 - y0 || 1)) * (H - 2 * pad);
-    const line = points.map((p) => `${X(p.underlying).toFixed(1)},${Y(p.pnl).toFixed(1)}`).join(" ");
-    svg.innerHTML = `<line x1="${pad}" x2="${W - pad}" y1="${Y(0)}" y2="${Y(0)}" stroke="#2a3340"/>
-      <line x1="${X(be)}" x2="${X(be)}" y1="${pad}" y2="${H - pad}" stroke="#5aa9ff" stroke-dasharray="4 4"/>
-      <polyline points="${line}" fill="none" stroke="#f5b942" stroke-width="2.5"/>`;
+  function advIgnored() {
+    const names = [];
+    if ($("f-sector").value !== "Any") names.push("sector");
+    if ($("f-cap").value !== "Any") names.push("market cap");
+    if ($("f-short").value) names.push("short float");
+    if ($("f-relvol").value) names.push("unusual volume");
+    if ($("f-ema").value !== "Any") names.push("20 EMA");
+    if ($("f-sma").value !== "Any") names.push("50 SMA");
+    if ($("f-gex").value !== "Any") names.push("gamma exposure");
+    if ($("f-ivr").value) names.push("IV rank");
+    if ($("f-oi").value) names.push("open interest");
+    if ($("f-dte").value !== "Any") names.push("days to expiry");
+    return names.length ? `Not applied yet, because this build has no data for: ${names.join(", ")}. Only custom rules ran.` : "Only custom rules ran.";
   }
   function screenerRow(f) {
     const row = document.createElement("div");
@@ -869,12 +1304,14 @@
           out.results.map((q) => `<div class="result-row"><div><strong>${esc(q.symbol)}</strong></div><div class="r">${usd(q.last)}</div><div class="r chg ${cls(q.change_pct)}">${pct(q.change_pct)}</div></div>`).join("")
         : "";
       $("scr-empty").style.display = out.results.length ? "none" : "block";
+      $("scr-note").textContent = advIgnored();
       if (!out.results.length) $("scr-empty").textContent = "No symbols matched. Loosen a filter to see more.";
     } catch (e) { toast(e.message); }
   });
 
   // ---------- account ----------
   function renderAccount() {
+    seedScreener();
     $("acc-name").value = account.name; $("acc-size").value = account.accountSize; $("acc-risk").value = account.riskPct;
     $("acc-sub").textContent = `Signed in as ${account.email}`;
     renderAccountData();
