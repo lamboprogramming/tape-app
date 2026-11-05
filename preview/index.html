@@ -38,7 +38,6 @@
   .topbar h1 { font-size: 20px; margin: 0; flex: 1; font-weight: 700; letter-spacing: .01em; }
   .topbar .sub { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; }
   .iconbtn { background: var(--panel-2); border: 1px solid var(--line); color: var(--text); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; font-size: 16px; flex: none; }
-  .pad { padding: 0 16px; }
   .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; margin: 0 16px; overflow: hidden; }
   .row { display: flex; align-items: center; gap: 12px; padding: 14px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
@@ -55,8 +54,6 @@
   @keyframes flashUp { from { background: rgba(46,204,113,.22); } to { background: transparent; } }
   @keyframes flashDown { from { background: rgba(255,92,108,.22); } to { background: transparent; } }
   .ghost { background: none; border: 0; color: var(--muted); font-size: 18px; padding: 6px 8px; cursor: pointer; }
-  .reorder { display: flex; flex-direction: column; gap: 0; }
-  .reorder button { background: none; border: 0; color: var(--muted); padding: 0 4px; cursor: pointer; font-size: 12px; line-height: 14px; }
   .addbar { display: flex; gap: 8px; padding: 0 16px 6px; }
   input, select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; width: 100%; }
   .btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -88,7 +85,6 @@
   .strike-row .k { font-weight: 700; }
   .strike-row .k small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
   .strike-row .r { text-align: right; }
-  .strike-row .hdr { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; }
   .strike-head { display: grid; grid-template-columns: 1.1fr 1fr 1fr .8fr; gap: 8px; padding: 0 14px 6px; }
   .strike-head div { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
   .strike-head div:not(:first-child) { text-align: right; }
@@ -145,7 +141,6 @@
   .login label { font-size: 12px; color: var(--muted); margin-top: 4px; }
   .label { font-size: 12px; color: var(--muted); margin: 10px 0 4px; display: block; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .list-tools { display: flex; gap: 8px; padding: 0 16px 10px; }
   .pill { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .alert-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 14px; border-bottom: 1px solid var(--line); }
   .alert-row:last-child { border-bottom: 0; }
@@ -158,18 +153,14 @@
   .metric-grid div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
   .metric-grid small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
   .metric-grid strong { font-size: 17px; font-variant-numeric: tabular-nums; }
-  svg.curve { width: 100%; height: 160px; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
   .mt { margin-top: 12px; }
   .spacer { height: 8px; }
   @media (min-width: 481px) { .tabbar, .sheet { max-width: 480px; } }
   /* ---------- discover ---------- */
-  .dchips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 14px 2px; scrollbar-width: none; }
-  .dchips::-webkit-scrollbar { display: none; }
   .dchip { flex: 0 0 auto; border: 0; background: none; color: var(--muted); font: inherit; font-size: 15px; font-weight: 600; padding: 8px 12px; border-radius: 999px; cursor: pointer; }
   .dchip.on { background: var(--panel-2); color: var(--text); }
   .dsec { padding: 18px 14px 0; }
   .dsec h2 { font-size: 20px; margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
-  .dsec h2 .info { font-size: 13px; color: var(--muted); border: 1px solid var(--muted); border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
   .dscroll { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
   .dscroll::-webkit-scrollbar { display: none; }
   .dpill { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -184,15 +175,12 @@
   .tile { border-radius: 8px; padding: 12px 6px; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
   .tile .t { font-weight: 800; font-size: 14px; }
   .tile .c { font-size: 14px; margin-top: 4px; }
-  .dempty { padding: 40px 14px; text-align: center; color: var(--muted); font-size: 14px; }
   .dnote { padding: 0 14px; font-size: 12px; color: var(--muted); }
   /* ---------- overview hero ---------- */
   .bp { padding: 6px 14px 0; }
   .bp .lbl { font-size: 13px; color: var(--muted); }
   .bp .amt { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; letter-spacing: -.5px; }
   .bp .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .cashrow { display: flex; justify-content: space-between; padding: 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
-  .cashrow .v { font-variant-numeric: tabular-nums; }
   /* ---------- watchlist + explore rows ---------- */
   .wrow { display: flex; align-items: center; gap: 10px; padding: 14px 2px; border-bottom: 1px solid var(--line); cursor: pointer; }
   .wrow .wl { flex: 1; min-width: 0; }
@@ -276,12 +264,7 @@
     .bp, .wlist-head, .addbar, .ex-cats { padding-left: 0; padding-right: 0; }
     .wrow { padding-left: 0; padding-right: 0; }
   }
-  .iv-wrap { position: relative; height: 360px; background: radial-gradient(ellipse at 50% 30%, var(--panel-2), var(--panel)); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
-  .iv-wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; }
-  .iv-legend { position: absolute; left: 14px; bottom: 12px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-  .iv-legend i { display: inline-block; width: 120px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #3b8bff, #f5b942, #ff5a36); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -305,7 +288,6 @@
       <div style="flex:1"><h1 id="wl-title">Overview</h1><span class="sub" id="wl-sub">Live quotes</span></div>
       <span class="pill" id="live-pill"><span class="status-dot" id="live-dot"></span><span id="live-text">connecting</span></span>
     </div>
-    <div class="desk"><div class="desk-l">
     <div class="wallets" id="wallets"></div>
     <div class="bp">
       <div class="lbl" id="bp-label">Paper buying power</div>
@@ -324,13 +306,6 @@
     <div id="wl-list"></div>
     <div class="empty" id="wl-empty" style="display:none">Your watchlist is empty. Add a symbol above.</div>
     <p class="hint">Prices update live. Change % is measured against the previous close.</p>
-    </div><div class="desk-r">
-    <div class="section-title"><span>Implied volatility surface</span><span class="pill">SPY · sample</span></div>
-    <div class="iv-wrap" id="iv3d">
-      <div class="iv-legend" id="iv-legend"><span>Low IV</span><i></i><span>High IV</span></div>
-    </div>
-    <p class="hint">Drag to rotate. Height and colour show implied volatility across strikes and expiries. Sample data.</p>
-    </div></div>
   </section>
 
   <!-- SYMBOL (underlying + option chain) -->
@@ -611,7 +586,7 @@
   <div class="toast" id="toast"></div>
 </div>
 
-<script>
+<script type="module">
 (() => {
   // ---------- helpers ----------
   const API = localStorage.getItem("tape.api") || "http://127.0.0.1:4000";
@@ -721,70 +696,6 @@
     $("d-cat").innerHTML = categoryHtml();
   }
 
-  // ---------- implied volatility surface (Three.js, sample data) ----------
-  let ivState = null;
-  function initIV() {
-    const host = $("iv3d");
-    if (!host || !window.THREE) return;
-    if (ivState) { ivState.resize(); return; }
-    const T = window.THREE;
-    const scene = new T.Scene();
-    const camera = new T.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(0, 3.4, 5.4);
-    camera.lookAt(0, 0.6, 0);
-    const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    host.insertBefore(renderer.domElement, host.firstChild);
-
-    // strikes across x, expiries across z, implied volatility as height and colour
-    const geo = new T.PlaneGeometry(4.4, 3.0, 44, 26);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position;
-    const colors = new Float32Array(pos.count * 3);
-    const c = new T.Color();
-    for (let i = 0; i < pos.count; i++) {
-      const k = (pos.getX(i) + 2.2) / 4.4;          // 0..1 across strikes
-      const t = (pos.getZ(i) + 1.5) / 3.0;          // 0..1 across expiries
-      const smile = 0.16 + 0.5 * Math.pow(k - 0.5, 2) + 0.10 * (1 - t) + 0.03 * Math.sin(k * 7 + t * 3);
-      pos.setY(i, smile * 2.4);
-      const hue = Math.max(0.0, Math.min(0.62, 0.62 - (smile - 0.16) * 1.4));
-      c.setHSL(hue, 0.85, 0.55);
-      colors.set([c.r, c.g, c.b], i * 3);
-    }
-    geo.setAttribute("color", new T.BufferAttribute(colors, 3));
-    geo.computeVertexNormals();
-    const mesh = new T.Mesh(geo, new T.MeshBasicMaterial({ vertexColors: true, side: T.DoubleSide, transparent: true, opacity: 0.92 }));
-    const wire = new T.LineSegments(new T.WireframeGeometry(geo), new T.LineBasicMaterial({ color: 0x3a4658, transparent: true, opacity: 0.45 }));
-    const group = new T.Group();
-    group.add(mesh, wire);
-    group.rotation.set(-0.35, 0.6, 0);
-    scene.add(group);
-
-    let dragging = false, lastX = 0;
-    const el = renderer.domElement;
-    el.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; el.setPointerCapture(e.pointerId); });
-    el.addEventListener("pointerup", () => { dragging = false; });
-    el.addEventListener("pointermove", (e) => { if (dragging) { group.rotation.y += (e.clientX - lastX) * 0.01; lastX = e.clientX; } });
-
-    const resize = () => {
-      const w = host.clientWidth, h = host.clientHeight;
-      if (!w || !h) return;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    };
-    new ResizeObserver(resize).observe(host);
-    resize();
-
-    const frame = () => {
-      if (host.offsetParent !== null && !dragging) group.rotation.y += 0.0015;
-      if (host.offsetParent !== null) renderer.render(scene, camera);
-      requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-    ivState = { resize };
-  }
-
   // ---------- navigation ----------
   const stack = [];
   function showScreen(id) {
@@ -797,7 +708,7 @@
     if (tab === "alerts") renderAlerts();
     if (tab === "account") renderAccount();
     if (tab === "tools") prefillTools();
-    if (tab === "watchlist") { renderWatchlist(); openTape(); initIV(); }
+    if (tab === "watchlist") { renderWatchlist(); openTape(); }
   }
   document.querySelectorAll("#tabbar button").forEach((b) => b.addEventListener("click", () => { stack.length = 0; setTab(b.dataset.tab); }));
   document.querySelectorAll("[data-back]").forEach((b) => b.addEventListener("click", () => { stack.pop(); setTab("watchlist"); }));
